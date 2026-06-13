@@ -203,6 +203,13 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+.dropzone__formats {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
+}
 
 .upload__error {
   margin-top: 16px;

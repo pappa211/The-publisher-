@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react'
 import './App.css'
 import type { AppStatus, Dataset } from './types'
-import { CsvParseError, loadSampleDataset, parseCsvFile } from './lib/parseCsv'
+import { FileParseError, loadSampleDataset, parseFile } from './lib/parseFile'
 import { Header } from './components/Header'
 import { UploadZone } from './components/UploadZone'
 import { Workspace } from './components/Workspace'
 
-const GENERIC_ERROR = 'Something went wrong while reading that file. Please try a different CSV.'
+const GENERIC_ERROR = 'Something went wrong while reading that file. Please try a different file.'
 
 export default function App() {
   const [status, setStatus] = useState<AppStatus>('idle')
@@ -21,14 +21,14 @@ export default function App() {
       setDataset(result)
       setStatus('ready')
     } catch (err) {
-      setError(err instanceof CsvParseError ? err.message : GENERIC_ERROR)
+      setError(err instanceof FileParseError ? err.message : GENERIC_ERROR)
       setStatus('error')
     }
   }, [])
 
   const handleFile = useCallback(
     (file: File) => {
-      void runParse(() => parseCsvFile(file))
+      void runParse(() => parseFile(file))
     },
     [runParse],
   )
