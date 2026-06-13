@@ -1,0 +1,33 @@
+city,country,region,population,area_km2,elevation_m,avg_temp_c,founded_year,is_capital,last_updated
+Tokyo,Japan,Asia,37400068,2194.07,40,15.4,1457,yes,2024-01-15
+Delhi,India,Asia,30290936,1484.0,216,25.1,1052,no,2024-01-15
+Shanghai,China,Asia,27058480,6340.5,4,17.0,1291,no,2024-02-01
+Sao Paulo,Brazil,South America,22043028,1521.11,760,19.3,1554,no,2024-02-01
+Mexico City,Mexico,North America,21782378,1485.0,2240,16.7,1325,yes,2024-01-20
+Cairo,Egypt,Africa,20900604,3085.0,23,21.4,969,yes,2024-03-10
+Mumbai,India,Asia,20411274,603.4,14,27.2,1507,no,2024-01-15
+Beijing,China,Asia,20462610,16410.5,43,12.9,1045,yes,2024-02-01
+Dhaka,Bangladesh,Asia,21005860,306.4,8,26.0,1608,yes,2024-03-10
+Osaka,Japan,Asia,19165340,225.21,,16.9,645,no,2024-01-15
+New York,United States,North America,18804000,783.8,10,12.9,1624,no,2024-01-20
+Karachi,Pakistan,Asia,16093786,3780.0,,26.1,1729,no,2024-03-10
+Buenos Aires,Argentina,South America,15154000,203.0,25,17.9,1536,yes,2024-02-01
+Istanbul,Turkey,Europe,15029231,5343.0,39,14.0,660,no,2024-02-15
+Kolkata,India,Asia,14850066,205.0,9,26.8,1690,no,2024-01-15
+Lagos,Nigeria,Africa,14368332,1171.28,41,26.9,1450,no,2024-03-10
+Manila,Philippines,Asia,13923452,619.57,16,28.0,1571,yes,2024-03-01
+Rio de Janeiro,Brazil,South America,13458075,1200.27,2,23.8,1565,no,2024-02-01
+Paris,France,Europe,11017230,105.4,35,12.3,250,yes,2024-02-15
+London,United Kingdom,Europe,9304016,1572.0,11,11.4,47,yes,2024-02-15
+Moscow,Russia,Europe,12506468,2561.5,156,5.8,1147,yes,2024-02-15
+Bangkok,Thailand,Asia,10539415,1568.74,1.5,28.1,1782,yes,2024-03-01
+Lima,Peru,South America,10719188,2672.3,154,19.0,1535,yes,2024-02-01
+Berlin,Germany,Europe,3669491,891.7,34,9.6,1237,yes,2024-02-15
+Madrid,Spain,Europe,6618000,604.3,667,15.0,860,yes,2024-02-15
+Toronto,Canada,North America,6196731,630.2,76,9.4,1793,no,2024-01-20
+Sydney,Australia,Oceania,5312163,12367.7,19,18.3,1788,no,2024-04-01
+Nairobi,Kenya,Africa,4397073,696.0,1795,17.8,1899,yes,2024-03-10
+Singapore,Singapore,Asia,5685807,728.6,15,27.5,1819,yes,2024-03-01
+Reykjavik,Iceland,Europe,131136,273.0,,4.3,874,yes,2024-04-01
+Wellington,New Zealand,Oceania,212700,444.0,31,12.8,1839,yes,2024-04-01
+Cape Town,South Africa,Africa,4618000,400.3,25,16.8,1652,no,2024-03-10
