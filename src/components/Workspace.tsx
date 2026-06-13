@@ -1,32 +1,22 @@
-import { useState } from 'react'
-import type { Dataset, ParseIssue } from '../types'
+import { useCallback, useMemo, useState } from 'react'
+import type { Dataset, Filter, ParseIssue } from '../types'
+import { inferRoles } from '../lib/roles'
+import { planReport } from '../lib/reportPlanner'
+import { applyFilters } from '../lib/aggregate'
 import { formatInt } from '../lib/format'
 import { SummaryCards } from './SummaryCards'
 import { DataTable } from './DataTable'
 import { ColumnProfileCard } from './ColumnProfileCard'
+import { Report } from './Report'
+import { FilterBar } from './FilterBar'
 
-type Tab = 'overview' | 'data'
+type Tab = 'report' | 'columns' | 'data'
 
-function ReportHeader({ dataset }: { dataset: Dataset }) {
-  const generated = new Date(dataset.parsedAt).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-  return (
-    <div className="report-head">
-      <div>
-        <h1 className="report-head__title" title={dataset.fileName}>
-          {dataset.fileName}
-        </h1>
-        <p className="report-head__sub">
-          {formatInt(dataset.rowCount)} rows × {formatInt(dataset.columnCount)} columns ·
-          generated {generated}
-        </p>
-      </div>
-      <span className="report-head__badge">Live report</span>
-    </div>
-  )
-}
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'report', label: 'Report' },
+  { id: 'columns', label: 'Column diagnostics' },
+  { id: 'data', label: 'Data table' },
+]
 
 function IssuesNote({ issues }: { issues: ParseIssue[] }) {
   return (
@@ -47,43 +37,90 @@ function IssuesNote({ issues }: { issues: ParseIssue[] }) {
   )
 }
 
-/** The post-upload report: summary, column overview and the data table. */
+/**
+ * The post-upload workspace. It profiles the dataset into a generic report
+ * plan, then offers three depths of detail: the interactive Report, the
+ * per-column diagnostics, and the raw data table. A single set of filters is
+ * shared across the report and the table.
+ */
 export function Workspace({ dataset }: { dataset: Dataset }) {
-  const [tab, setTab] = useState<Tab>('overview')
+  const [tab, setTab] = useState<Tab>('report')
+  const [filters, setFilters] = useState<Filter[]>([])
+
+  const roles = useMemo(() => inferRoles(dataset), [dataset])
+  const plan = useMemo(() => planReport(dataset, roles), [dataset, roles])
+  const roleByName = useMemo(() => new Map(roles.map((r) => [r.name, r])), [roles])
+  const filteredRows = useMemo(() => applyFilters(dataset.rows, filters), [dataset.rows, filters])
+
+  // One value per column: selecting a new value replaces the old filter.
+  const handleFilter = useCallback((column: string, value: string) => {
+    setFilters((prev) => [...prev.filter((f) => f.column !== column), { column, value }])
+  }, [])
+
+  const handleRemoveFilter = useCallback((filter: Filter) => {
+    setFilters((prev) => prev.filter((f) => !(f.column === filter.column && f.value === filter.value)))
+  }, [])
+
+  const handleClearFilters = useCallback(() => setFilters([]), [])
+  const openData = useCallback(() => setTab('data'), [])
 
   return (
     <div className="workspace">
-      <ReportHeader dataset={dataset} />
-      <SummaryCards dataset={dataset} />
       {dataset.issues.length > 0 && <IssuesNote issues={dataset.issues} />}
 
       <div className="tabs" role="tablist">
-        <button
-          role="tab"
-          aria-selected={tab === 'overview'}
-          className={`tab${tab === 'overview' ? ' tab--active' : ''}`}
-          onClick={() => setTab('overview')}
-        >
-          Column overview
-        </button>
-        <button
-          role="tab"
-          aria-selected={tab === 'data'}
-          className={`tab${tab === 'data' ? ' tab--active' : ''}`}
-          onClick={() => setTab('data')}
-        >
-          Data table
-        </button>
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            className={`tab${tab === t.id ? ' tab--active' : ''}`}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {tab === 'overview' ? (
-        <section className="profiles-grid">
-          {dataset.profiles.map((profile) => (
-            <ColumnProfileCard key={profile.name} profile={profile} />
-          ))}
+      {tab === 'report' && (
+        <Report
+          dataset={dataset}
+          plan={plan}
+          rows={filteredRows}
+          filters={filters}
+          onFilter={handleFilter}
+          onRemoveFilter={handleRemoveFilter}
+          onClearFilters={handleClearFilters}
+          onOpenData={openData}
+        />
+      )}
+
+      {tab === 'columns' && (
+        <section className="columns-tab">
+          <SummaryCards dataset={dataset} />
+          <p className="columns-tab__note muted">
+            Column diagnostics describe the full file ({formatInt(dataset.rowCount)} rows). Filters apply to the
+            Report and Data tabs.
+          </p>
+          <div className="profiles-grid">
+            {dataset.profiles.map((profile) => (
+              <ColumnProfileCard key={profile.name} profile={profile} role={roleByName.get(profile.name)} />
+            ))}
+          </div>
         </section>
-      ) : (
-        <DataTable columns={dataset.columns} rows={dataset.rows} profiles={dataset.profiles} />
+      )}
+
+      {tab === 'data' && (
+        <section className="data-tab">
+          <FilterBar
+            filters={filters}
+            filteredCount={filteredRows.length}
+            totalCount={dataset.rowCount}
+            onRemove={handleRemoveFilter}
+            onClear={handleClearFilters}
+          />
+          <DataTable columns={dataset.columns} rows={filteredRows} profiles={dataset.profiles} />
+        </section>
       )}
     </div>
   )

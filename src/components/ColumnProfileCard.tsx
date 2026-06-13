@@ -1,11 +1,12 @@
-import type { ColumnProfile } from '../types'
+import type { ColumnProfile, ColumnRole } from '../types'
 import { formatInt, formatNumber, formatPercent } from '../lib/format'
 import { TypeBadge } from './TypeBadge'
+import { RoleBadge } from './RoleBadge'
 import { CategoryBars } from './CategoryBars'
 import { Histogram } from './Histogram'
 
-/** A "report card" for a single column: type, completeness and distribution. */
-export function ColumnProfileCard({ profile }: { profile: ColumnProfile }) {
+/** A "report card" for a single column: role, type, completeness and distribution. */
+export function ColumnProfileCard({ profile, role }: { profile: ColumnProfile; role?: ColumnRole }) {
   const completeness = 100 - profile.missingPct
   const { numericStats, dateRange, topValues, histogram } = profile
 
@@ -15,8 +16,16 @@ export function ColumnProfileCard({ profile }: { profile: ColumnProfile }) {
         <h3 className="profile-card__name" title={profile.name}>
           {profile.name}
         </h3>
-        <TypeBadge type={profile.inferredType} />
+        <div className="profile-card__badges">
+          {role && <RoleBadge role={role.role} />}
+          <TypeBadge type={profile.inferredType} />
+        </div>
       </header>
+      {role && role.reasons.length > 0 && (
+        <p className="profile-card__role-why" title={role.reasons.join(' · ')}>
+          {role.reasons[0]}
+        </p>
+      )}
 
       <div className="profile-card__meter" title={`${formatPercent(completeness)} filled`}>
         <div

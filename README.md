@@ -1,73 +1,108 @@
 # The Publisher
 
-**Turn a static CSV file into an interactive, explorable web document — entirely in your browser.**
+**Turn any CSV into a domain-agnostic, interactive living report — entirely in your browser.**
 
-The Publisher is a lightweight, client-side prototype of a "living document" tool. Drop in a
-CSV export and the page instantly profiles it, charts it, and turns it into a readable interactive
-report. There is **no backend, no database, no upload, and no API keys** — your file is read and
-analysed locally and never leaves your device.
+The Publisher is a lightweight, client-side prototype of a "living document" tool. Drop in a CSV
+export and the page profiles it, **infers the generic structure of the data**, **plans a set of
+useful views**, and renders them as an interactive report. There is **no backend, no database, no
+upload, and no API keys** — your file is read and analysed locally and never leaves your device.
 
 > Live demo (once deployed): **https://pappa211.github.io/The-publisher-/**
 
 ---
 
-## What it does
+## v0.2 — Domain-Agnostic Report Planner
 
-1. **Drag & drop or browse** for a `.csv` file (or load the bundled sample dataset).
-2. **Parses the CSV safely on the client** using [PapaParse](https://www.papaparse.com/).
-3. **Infers a type for every column** — integer, number, date, boolean or text — using
-   conservative, order-aware heuristics (e.g. a bare `2020` stays a number, not a date).
-4. **Profiles each column**: completeness, missing-value counts, unique values, numeric summary
-   statistics (min / max / mean / median), histograms, and most-frequent categories.
-5. **Presents an automatic overview**: headline summary cards (rows, columns, data completeness,
-   file size, column-type breakdown) plus a "report card" for every column.
-6. **Lets you explore the raw data** in a searchable, sortable, paginated table with type-aware
-   sorting and missing-value highlighting.
+v0.1 was a static dashboard of metadata boxes. v0.2 turns that metadata into an interactive report
+by reasoning about the **generic grammar** of the data rather than any specific business domain. The
+pipeline is:
 
-The result is meant to feel like a small interactive report, not a raw table dump.
+```text
+CSV
+  ↓  parse            (PapaParse, client-side)
+  ↓  column profiling  (types, completeness, cardinality, stats)
+  ↓  generic roles     (temporal · measure · dimension · identifier · text · flag)
+  ↓  report plan       (title, narrative, findings, suggested views, quality notes)
+  ↓  interactive views (filters · charts · pivots · tables)
+```
+
+The key idea: **profile first, infer generic roles second, plan views third, render last.** A trial
+balance, a football-results file and a trade ledger have completely different meanings, but
+structurally they are all just combinations of dates, categorical dimensions, numeric measures,
+identifiers and text — so the same code produces a sensible (but different) report for each.
+
+### Why it does not overfit
+
+- Roles are inferred from **structure only** — type, cardinality, value length and sign — never from
+  business column names. A column called `pnl`, `balance` or `home_goals` is simply "a numeric
+  measure"; `symbol`, `entity` or `home_team` is simply "a categorical dimension".
+- The **only** place names are consulted is a small, cross-domain identifier convention
+  (`id`, `code`, `no`, `uuid`, `key`, …), used purely to tell keys apart from measures/dimensions.
+  For example `account_no` is recognised as a grouping key and is **not** summed like a real measure.
+- An optional `datasetKindGuess` ("Time-stamped event log", "Balance-style summary", …) is included,
+  but it is **explicitly low-authority** and never drives any logic. The app is fully useful even if
+  that guess is wrong.
+
+You can see this for yourself — a dev script prints the inferred roles and plan for every bundled
+sample (see [Verify the planner](#verify-the-planner)).
+
+### What you see after upload
+
+1. A **report title** and a concise, plain-language **narrative summary**.
+2. **Key structural findings** as chips (time axis, measures, dimensions, identifiers, completeness).
+3. **Suggested views**, chosen from the detected structure:
+   - **Key measures** — totals/averages per numeric field;
+   - **Trend over time** — count or an aggregated measure over an auto-bucketed date axis (SVG line);
+   - **Category breakdown** — bars by any dimension, by count or a measure; **click a bar to filter**;
+   - **Distribution** — histogram of any measure;
+   - **Cross-tab** — a two-dimension pivot heat-table; **click a cell to filter**;
+   - **Completeness map** — per-column missingness for the current selection.
+4. **Interactive filters** — active filters show as removable chips and apply across the report and
+   the data table; charts and summaries recompute against the filtered rows.
+5. **Deeper detail** — per-column **diagnostics** (now annotated with each column's generic role) and
+   the original searchable / sortable / paginated **data table**.
+
+The column cards and table still exist, but they no longer dominate the first impression.
 
 ---
 
 ## Tech stack
 
 - [Vite](https://vitejs.dev/) — build tool & dev server
-- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) (strict)
 - [PapaParse](https://www.papaparse.com/) — robust client-side CSV parsing
-- Plain CSS with design tokens, and hand-built CSS charts (no heavy charting dependency)
+- Plain CSS with design tokens, and **hand-built CSS/SVG charts** — no charting dependency was added,
+  keeping the bundle small (~68 kB gzipped JS).
 
 ### Project structure
 
-```text
-.
-├── .github/workflows/deploy.yml      # GitHub Pages CI/CD
-├── public/
-│   ├── favicon.svg
-│   └── sample-data/world-cities.csv  # bundled demo dataset
-├── src/
-│   ├── components/                   # UI components (presentational)
-│   │   ├── CategoryBars.tsx
-│   │   ├── ColumnProfileCard.tsx
-│   │   ├── DataTable.tsx
-│   │   ├── Header.tsx
-│   │   ├── Histogram.tsx
-│   │   ├── SummaryCards.tsx
-│   │   ├── TypeBadge.tsx
-│   │   ├── UploadZone.tsx
-│   │   └── Workspace.tsx
-│   ├── lib/                          # pure logic, no UI
-│   │   ├── format.ts                 # display formatting helpers
-│   │   ├── inferTypes.ts             # value parsing + column type inference
-│   │   ├── parseCsv.ts               # PapaParse wrapper -> Dataset
-│   │   └── profile.ts                # per-column profiling & stats
-│   ├── types/index.ts                # shared TypeScript domain types
-│   ├── App.tsx                       # app state machine (idle/parsing/ready/error)
-│   └── main.tsx                      # entry point
-├── index.html
-└── vite.config.ts                    # sets base: '/The-publisher-/'
-```
+Logic is kept out of the UI: profiling, role inference, planning and aggregation are pure functions
+in `src/lib/`; components in `src/components/` only render.
 
-CSV parsing, type inference, and profiling live in `src/lib/` and are kept separate from the React
-components, so the logic is easy to test and reuse.
+```text
+src/
+├── lib/
+│   ├── parseCsv.ts        # PapaParse wrapper -> Dataset (+ sample registry)
+│   ├── inferTypes.ts      # value parsing + column type inference
+│   ├── profile.ts         # per-column profiling & stats
+│   ├── roles.ts           # NEW: generic semantic role inference
+│   ├── reportPlanner.ts   # NEW: profiled dataset + roles -> ReportPlan
+│   ├── aggregate.ts       # NEW: filter-aware grouping / time-bucketing / pivots
+│   └── format.ts          # display formatting helpers
+├── components/
+│   ├── Report.tsx         # NEW: narrative + filters + suggested views
+│   ├── FilterBar.tsx      # NEW: active-filter chips
+│   ├── RoleBadge.tsx      # NEW: generic-role pill
+│   ├── views/             # NEW: KeyMeasures, TimeTrend, CategoryBreakdown,
+│   │                      #      Distribution, CrossTab, CompletenessMap, …
+│   ├── Workspace.tsx      # tabs: Report · Column diagnostics · Data table
+│   ├── DataTable.tsx, ColumnProfileCard.tsx, SummaryCards.tsx, …
+│   └── UploadZone.tsx, Header.tsx
+├── types/index.ts         # shared types (Dataset, ColumnRole, ReportPlan, …)
+└── App.tsx, main.tsx
+public/sample-data/        # bundled sample CSVs (see below)
+scripts/verify-planner.ts  # dev-only: prints roles + plan per sample
+```
 
 ---
 
@@ -80,7 +115,7 @@ npm install
 npm run dev
 ```
 
-Then open the URL Vite prints (it includes the base path):
+Then open the URL Vite prints (it includes the GitHub Pages base path):
 
 ```text
 http://localhost:5173/The-publisher-/
@@ -93,100 +128,90 @@ npm run build     # type-checks with tsc, then builds to dist/
 npm run preview   # serves the production build locally to verify it
 ```
 
-Other scripts:
-
-```bash
-npm run typecheck # tsc --noEmit only
-```
-
 ---
 
-## Test it manually
+## Test it with three different data shapes
 
-1. Run `npm run dev` and open the app.
-2. Click **“Load a sample dataset”** — the bundled `world-cities.csv` loads and you should see:
-   - summary cards (32 rows × 10 columns, data completeness, file size, type breakdown);
-   - a **Column overview** tab with a profile card per column, including a histogram for
-     `population` / `area_km2` and category bars for `region` / `is_capital`;
-   - column types correctly inferred (e.g. `population` → Integer, `area_km2` → Number,
-     `last_updated` → Date, `is_capital` → Boolean).
-3. Switch to the **Data table** tab and try:
-   - **searching** (e.g. type `japan`) — the row count updates;
-   - **sorting** by clicking a column header (numeric columns sort numerically, dates
-     chronologically, missing values fall to the bottom);
-   - **paging** with the rows-per-page selector and pager controls.
-4. Click **“New file”** in the header, then drag-and-drop your own `.csv` onto the drop zone.
-5. Try an invalid file (e.g. an image or an empty file) to see the friendly error state.
+The app ships with deliberately diverse samples so you can confirm it is **not** a trade-ledger
+viewer. On the upload screen, pick any sample chip (or drop your own CSV):
 
-### Make your own sample CSV
+| Sample | File | The planner naturally surfaces |
+| --- | --- | --- |
+| **Trade ledger** | `public/sample-data/trade-ledger-sample.csv` | `event_time` as the time axis; `symbol`/`side`/`event_type`/`strategy` dimensions; `price`/`quantity`/`pnl` measures (negatives detected); `event_id` as an identifier; event counts and drill-down. |
+| **Trial balance** | `public/sample-data/trial-balance-sample.csv` | `account_no`/`account_name`/`account_class`/`entity` dimensions; `debit`/`credit`/`balance` measures; largest balances via the breakdown; completeness gaps; table exploration. `account_no` is treated as a key, **not** summed. |
+| **Football results** | `public/sample-data/football-results-sample.csv` | `date` time axis; `league`/`season`/`home_team`/`away_team`/`venue` dimensions; `home_goals`/`away_goals` measures; matches over time; category and cross-tab breakdowns. |
 
-Any comma-separated file with a header row works. For example, save this as `demo.csv`:
+A fourth sample, `world-cities.csv`, exercises a reference-data shape (mixed types, a free-text label,
+a boolean flag).
 
-```csv
-name,team,score,joined,active
-Ada,Blue,42,2023-01-15,yes
-Grace,Red,37,2023-03-02,no
-Alan,Blue,,2022-11-30,yes
-Edsger,Green,51,2024-02-20,no
+Things to try on any sample:
+
+- Switch the **Group by** / **Measure** / **Aggregate** selectors on a view to explore.
+- **Click a category bar** (or a cross-tab cell) to add a filter — watch the chips appear and every
+  chart, the key measures and the data table recompute. Remove chips or **Clear all** to reset.
+- Open **Column diagnostics** to see each column's inferred **generic role** and why.
+- Open the **Data table** for search, type-aware sort, and pagination.
+
+### Verify the planner
+
+To see, in plain text, that the planner adapts to each shape without any domain code:
+
+```bash
+npx tsx scripts/verify-planner.ts
 ```
 
-The Publisher will detect `score` as a number (with a missing value), `joined` as a date,
-`active` as a boolean, and `name`/`team` as text.
+It prints the inferred role of every column, the chosen time axis / measures / dimensions, the
+suggested views and the narrative for each bundled CSV. (Dev-only; not part of the app build.)
 
 ---
 
 ## Deploy to GitHub Pages
 
-The repo includes a workflow at **`.github/workflows/deploy.yml`** that builds the app and
-publishes `dist/` to GitHub Pages on every push to `main`.
+The repo includes a workflow at **`.github/workflows/deploy.yml`** that builds the app and publishes
+`dist/` to GitHub Pages on every push to `main`.
 
 **One-time setup** in the GitHub repository (`pappa211/The-publisher-`):
 
-1. Push this project to the `main` branch of the public repo.
-2. Go to **Settings → Pages**.
-3. Under **Build and deployment → Source**, choose **GitHub Actions**.
-4. Push to `main` (or re-run the workflow from the **Actions** tab). The workflow will:
-   - `npm ci`
-   - `npm run build`
-   - upload `dist/` and deploy it to Pages.
-5. The site goes live at **https://pappa211.github.io/The-publisher-/**.
+1. Go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Push to `main` (or re-run the workflow from the **Actions** tab). The workflow runs `npm ci`,
+   `npm run build`, then uploads and deploys `dist/`.
+4. The site goes live at **https://pappa211.github.io/The-publisher-/**.
 
-> **Why the `base` setting?** Project sites are served from a subpath
-> (`/The-publisher-/`), so `vite.config.ts` sets `base: '/The-publisher-/'`. All asset URLs and
-> the sample-data fetch use this base automatically. If you fork this under a different repo name,
-> update `base` to match `/<your-repo-name>/`.
+> **Why the `base` setting?** Project sites are served from a subpath (`/The-publisher-/`), so
+> `vite.config.ts` sets `base: '/The-publisher-/'`. All asset URLs and the sample-data fetches use
+> this base automatically. If you fork this under a different repo name, update `base` to match
+> `/<your-repo-name>/`.
 
 ---
 
 ## Current limitations / tradeoffs
 
-- **CSV only.** No TSV/Excel/JSON ingestion yet (PapaParse will still auto-detect common
-  delimiters, but the UI is framed around CSV).
-- **Everything is in memory.** Very large files (hundreds of MB / millions of rows) will be slow
-  or may exhaust browser memory. Type inference samples the first 5,000 rows for speed; stats and
-  completeness use all rows. The table itself is paginated but not virtualized.
-- **Heuristic type inference.** Detection is intentionally conservative and may not match every
-  locale (e.g. comma decimal separators, exotic date formats). A column needs ~95% of its values
-  to match a type, otherwise it is treated as text.
-- **No persistence or sharing.** Reloading the page clears the report; there is no save/export.
-- **Single file at a time.** No multi-file or multi-sheet support.
-- **Charts are simple by design** (CSS histograms and category bars) to keep the dependency
-  footprint tiny.
+- **Heuristic roles.** Role inference is structural and conservative; it can be fooled (e.g. an
+  integer "year" is treated as a numeric measure, a near-unique code without an id-like name may read
+  as text). This is deliberate — guessing business meaning is exactly what the project avoids.
+- **Generic, not optimal, combinations.** The planner picks a reasonable primary measure/dimension; it
+  does not understand that, say, home and away goals could be summed into a single "total goals"
+  metric. Derived fields are intentionally not fabricated.
+- **In-memory & non-virtualized.** Type inference samples the first 5,000 rows; stats use all rows.
+  Very large files (hundreds of MB) will be slow. The table is paginated but not virtualized.
+- **CSV only**, single file at a time, and **no persistence/sharing** — reloading clears the report.
+- **Charts are simple by design** (CSS/SVG) to keep the dependency footprint tiny.
+- **Filters are equality-only** (one value per column) and apply to the report and data table; the
+  column-diagnostics cards still describe the full file.
 
 ---
 
 ## Suggested next iterations
 
-- **Export the report**: download as a standalone HTML file or PDF; copy a shareable link that
-  encodes the view state.
-- **Richer charts**: scatter / line / time-series for date columns; correlation heatmap.
-- **More inputs**: TSV, JSON, Excel (`.xlsx`), and pasting data directly.
-- **Per-column drill-down**: click a column to filter the table; click a histogram bar to filter
-  to that range.
-- **Performance**: move parsing to a Web Worker and virtualize the table for very large files.
-- **Data quality rules**: flag outliers, duplicate rows, and inconsistent formatting.
-- **Light/dark theme** toggle and saved user preferences.
-- **Editable cells** to nudge toward the true "living document" vision.
+- **Richer filters**: multi-select and numeric/date range filters (e.g. click a histogram bar or
+  brush the trend line to filter a range).
+- **Smarter planning**: rank suggested views by usefulness; offer optional derived fields (ratios,
+  row sums) the user can opt into; detect correlations between measures.
+- **Export & share**: download a standalone HTML/PDF report, or encode the filter/view state in the URL.
+- **More inputs**: TSV, JSON, Excel (`.xlsx`), and paste-to-analyse.
+- **Performance**: parse in a Web Worker and virtualize the table for very large files.
+- **Editable cells & annotations** to push further toward a true "living document".
 
 ---
 

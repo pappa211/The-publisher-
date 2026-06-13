@@ -107,14 +107,53 @@ function buildDataset(
   }
 }
 
-/** Fetch the bundled sample CSV and parse it through the same pipeline. */
-export async function loadSampleDataset(): Promise<Dataset> {
-  const url = `${import.meta.env.BASE_URL}sample-data/world-cities.csv`
+/** A bundled sample dataset, used to demonstrate different data *shapes*. */
+export interface SampleDataset {
+  id: string
+  label: string
+  file: string
+  description: string
+}
+
+/**
+ * Deliberately diverse samples so the report planner can be tested against very
+ * different structures — never tuned for any single one of them.
+ */
+export const SAMPLE_DATASETS: SampleDataset[] = [
+  {
+    id: 'trade-ledger',
+    label: 'Trade ledger',
+    file: 'trade-ledger-sample.csv',
+    description: 'Time-stamped trading events with P&L',
+  },
+  {
+    id: 'trial-balance',
+    label: 'Trial balance',
+    file: 'trial-balance-sample.csv',
+    description: 'Accounting balances by entity & period',
+  },
+  {
+    id: 'football-results',
+    label: 'Football results',
+    file: 'football-results-sample.csv',
+    description: 'Match results across leagues & seasons',
+  },
+  {
+    id: 'world-cities',
+    label: 'World cities',
+    file: 'world-cities.csv',
+    description: 'Reference data with mixed column types',
+  },
+]
+
+/** Fetch a bundled sample CSV by file name and parse it through the pipeline. */
+export async function loadSampleDataset(file = SAMPLE_DATASETS[0].file): Promise<Dataset> {
+  const url = `${import.meta.env.BASE_URL}sample-data/${file}`
   const response = await fetch(url)
   if (!response.ok) {
     throw new CsvParseError('Could not load the sample dataset.')
   }
   const text = await response.text()
-  const file = new File([text], 'world-cities.csv', { type: 'text/csv' })
-  return parseCsvFile(file)
+  const blob = new File([text], file, { type: 'text/csv' })
+  return parseCsvFile(blob)
 }

@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, DragEvent, KeyboardEvent } from 'react'
+import { SAMPLE_DATASETS } from '../lib/parseCsv'
 
 interface UploadZoneProps {
   onFile: (file: File) => void
-  onSample: () => void
+  onSample: (file?: string) => void
   error: string | null
   busy: boolean
 }
@@ -116,10 +117,21 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
       )}
 
       <div className="upload__sample">
-        <span className="muted">No file handy?</span>
-        <button className="btn btn--soft" onClick={onSample} disabled={busy}>
-          Load a sample dataset
-        </button>
+        <span className="muted">No file handy? Try a sample with a different shape:</span>
+        <div className="upload__sample-grid">
+          {SAMPLE_DATASETS.map((sample) => (
+            <button
+              key={sample.id}
+              className="sample-chip"
+              onClick={() => onSample(sample.file)}
+              disabled={busy}
+              title={sample.description}
+            >
+              <span className="sample-chip__label">{sample.label}</span>
+              <span className="sample-chip__desc">{sample.description}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <ul className="upload__features">

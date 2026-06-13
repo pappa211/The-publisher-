@@ -33,9 +33,12 @@ export default function App() {
     [runParse],
   )
 
-  const handleSample = useCallback(() => {
-    void runParse(() => loadSampleDataset())
-  }, [runParse])
+  const handleSample = useCallback(
+    (file?: string) => {
+      void runParse(() => loadSampleDataset(file))
+    },
+    [runParse],
+  )
 
   const handleReset = useCallback(() => {
     setDataset(null)
@@ -50,7 +53,7 @@ export default function App() {
       <Header hasData={hasData} onReset={handleReset} />
       <main className="app-main">
         {status === 'ready' && dataset ? (
-          <Workspace dataset={dataset} />
+          <Workspace key={dataset.parsedAt} dataset={dataset} />
         ) : (
           <UploadZone
             onFile={handleFile}
