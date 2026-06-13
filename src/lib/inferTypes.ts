@@ -25,6 +25,7 @@ const CURRENCY_RE = /^[-+]?[$€£¥]\s?/
  * `Date.parse`, which is otherwise far too lenient. */
 const DATE_RES: RegExp[] = [
   /^\d{4}-\d{1,2}-\d{1,2}([ T]\d{1,2}:\d{2}(:\d{2})?(\.\d+)?Z?)?$/, // ISO 8601
+  /^\d{4}[-/](0?[1-9]|1[0-2])$/, // year-month period, e.g. 2024-01 or 2024/1
   /^\d{1,2}\/\d{1,2}\/\d{2,4}$/, // 1/2/2020 or 01/02/20
   /^\d{1,2}-\d{1,2}-\d{2,4}$/, // 1-2-2020
 ]

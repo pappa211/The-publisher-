@@ -17,7 +17,7 @@ const MAX_TOP_VALUES = 8
 /** Target number of histogram buckets. */
 const HISTOGRAM_BINS = 12
 
-function computeNumericStats(nums: number[]): NumericStats {
+export function computeNumericStats(nums: number[]): NumericStats {
   const sorted = [...nums].sort((a, b) => a - b)
   const n = sorted.length
   const sum = sorted.reduce((acc, x) => acc + x, 0)
@@ -35,7 +35,7 @@ function computeNumericStats(nums: number[]): NumericStats {
   }
 }
 
-function buildHistogram(nums: number[], stats: NumericStats): HistogramBin[] {
+export function buildHistogram(nums: number[], stats: NumericStats): HistogramBin[] {
   const { min, max } = stats
   // Degenerate range: a single bucket holding everything.
   if (min === max) {
@@ -97,6 +97,10 @@ export function profileColumn(
   const filledCount = filledValues.length
   const missingCount = totalCount - filledCount
   const uniqueCount = new Set(filledValues.map((v) => v.trim())).size
+  const avgLength =
+    filledCount === 0
+      ? 0
+      : filledValues.reduce((acc, v) => acc + v.trim().length, 0) / filledCount
 
   const profile: ColumnProfile = {
     name,
@@ -107,6 +111,7 @@ export function profileColumn(
     missingCount,
     missingPct: totalCount === 0 ? 0 : (missingCount / totalCount) * 100,
     uniqueCount,
+    avgLength,
   }
 
   if (isNumericType(inferredType)) {
