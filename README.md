@@ -1,11 +1,13 @@
 # The Publisher
 
-**Turn any CSV into a domain-agnostic, interactive living report — entirely in your browser.**
+**Turn any spreadsheet into a domain-agnostic, interactive living report — entirely in your browser.**
 
-The Publisher is a lightweight, client-side prototype of a "living document" tool. Drop in a CSV
-export and the page profiles it, **infers the generic structure of the data**, **plans a set of
-useful views**, and renders them as an interactive report. There is **no backend, no database, no
-upload, and no API keys** — your file is read and analysed locally and never leaves your device.
+The Publisher is a lightweight, client-side prototype of a "living document" tool. Drop in a
+spreadsheet — **CSV, Excel (`.xlsx`/`.xlsm`/`.xlsb`/`.xls`), Apple Numbers (`.numbers`) or
+OpenDocument (`.ods`)** — and the page profiles it, **infers the generic structure of the data**,
+**plans a set of useful views**, and renders them as an interactive report. There is **no backend, no
+database, no upload, and no API keys** — your file is read and analysed locally and never leaves your
+device.
 
 > Live demo (once deployed): **https://pappa211.github.io/The-publisher-/**
 
@@ -18,8 +20,8 @@ by reasoning about the **generic grammar** of the data rather than any specific 
 pipeline is:
 
 ```text
-CSV
-  ↓  parse            (PapaParse, client-side)
+CSV · Excel · Numbers · ODS
+  ↓  parse            (PapaParse for CSV/TSV, SheetJS for workbooks — all client-side)
   ↓  column profiling  (types, completeness, cardinality, stats)
   ↓  generic roles     (temporal · measure · dimension · identifier · text · flag)
   ↓  report plan       (title, narrative, findings, suggested views, quality notes)
@@ -70,9 +72,12 @@ The column cards and table still exist, but they no longer dominate the first im
 
 - [Vite](https://vitejs.dev/) — build tool & dev server
 - [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) (strict)
-- [PapaParse](https://www.papaparse.com/) — robust client-side CSV parsing
+- [PapaParse](https://www.papaparse.com/) — robust client-side CSV/TSV parsing
+- [SheetJS](https://sheetjs.com/) (`xlsx`) — reads Excel, OpenDocument and Apple Numbers workbooks.
+  It is **lazy-loaded on demand** (dynamic `import`), so it ships as a separate chunk and only
+  downloads when you actually open a spreadsheet — the CSV path keeps the initial bundle small.
 - Plain CSS with design tokens, and **hand-built CSS/SVG charts** — no charting dependency was added,
-  keeping the bundle small (~68 kB gzipped JS).
+  keeping the main bundle small (~70 kB gzipped JS).
 
 ### Project structure
 
@@ -82,7 +87,10 @@ in `src/lib/`; components in `src/components/` only render.
 ```text
 src/
 ├── lib/
-│   ├── parseCsv.ts        # PapaParse wrapper -> Dataset (+ sample registry)
+│   ├── parseFile.ts       # entry point: sniff file type & dispatch (+ sample registry)
+│   ├── parseCsv.ts        # PapaParse wrapper (CSV/TSV)
+│   ├── parseSpreadsheet.ts# SheetJS wrapper (xlsx/xls/xlsb/ods/numbers), lazy-loaded
+│   ├── dataset.ts         # shared: header normalization, cell coercion -> Dataset
 │   ├── inferTypes.ts      # value parsing + column type inference
 │   ├── profile.ts         # per-column profiling & stats
 │   ├── roles.ts           # NEW: generic semantic role inference
@@ -133,7 +141,7 @@ npm run preview   # serves the production build locally to verify it
 ## Test it with three different data shapes
 
 The app ships with deliberately diverse samples so you can confirm it is **not** a trade-ledger
-viewer. On the upload screen, pick any sample chip (or drop your own CSV):
+viewer. On the upload screen, pick any sample chip (or drop your own CSV / Excel / Numbers file):
 
 | Sample | File | The planner naturally surfaces |
 | --- | --- | --- |
@@ -195,7 +203,9 @@ The repo includes a workflow at **`.github/workflows/deploy.yml`** that builds t
   metric. Derived fields are intentionally not fabricated.
 - **In-memory & non-virtualized.** Type inference samples the first 5,000 rows; stats use all rows.
   Very large files (hundreds of MB) will be slow. The table is paginated but not virtualized.
-- **CSV only**, single file at a time, and **no persistence/sharing** — reloading clears the report.
+- **Spreadsheets import the first sheet with data**; additional sheets are skipped (with a notice).
+  Cell values are read at their underlying value (e.g. a `50%`-formatted cell reads as `0.5`).
+- **Single file at a time**, and **no persistence/sharing** — reloading clears the report.
 - **Charts are simple by design** (CSS/SVG) to keep the dependency footprint tiny.
 - **Filters are equality-only** (one value per column) and apply to the report and data table; the
   column-diagnostics cards still describe the full file.
@@ -209,7 +219,8 @@ The repo includes a workflow at **`.github/workflows/deploy.yml`** that builds t
 - **Smarter planning**: rank suggested views by usefulness; offer optional derived fields (ratios,
   row sums) the user can opt into; detect correlations between measures.
 - **Export & share**: download a standalone HTML/PDF report, or encode the filter/view state in the URL.
-- **More inputs**: TSV, JSON, Excel (`.xlsx`), and paste-to-analyse.
+- **More inputs**: JSON, multi-sheet selection for workbooks, and paste-to-analyse. (CSV/TSV, Excel,
+  Numbers and ODS are already supported.)
 - **Performance**: parse in a Web Worker and virtualize the table for very large files.
 - **Editable cells & annotations** to push further toward a true "living document".
 
@@ -217,6 +228,6 @@ The repo includes a workflow at **`.github/workflows/deploy.yml`** that builds t
 
 ## Privacy
 
-The Publisher is fully static. Your CSV is parsed in the browser using standard web APIs and is
+The Publisher is fully static. Your file is parsed in the browser using standard web APIs and is
 **never uploaded** to any server. There is no analytics, no tracking, and no third-party data
 collection.

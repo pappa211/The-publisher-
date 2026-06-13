@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "description": "Drop in any CSV and get a domain-agnostic, interactive living report — fully client-side.",
+  "description": "Drop in any spreadsheet (CSV, Excel, Numbers, ODS) and get a domain-agnostic, interactive living report — fully client-side.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -13,7 +13,8 @@
   "dependencies": {
     "papaparse": "^5.4.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/papaparse": "^5.3.15",
