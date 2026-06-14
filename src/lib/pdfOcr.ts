@@ -7,14 +7,15 @@
  * only network fetch is Tesseract's own engine + English language model, loaded
  * on demand from a public CDN (analogous to loading a script), then cached.
  *
- * OCR is heavy, so it is opt-in, page-limited, sequential, progress-reporting and
- * cancellable. Tesseract.js is lazily imported so it never bloats the main bundle.
+ * OCR is heavy, so it is opt-in, capped for extreme documents, sequential,
+ * progress-reporting and cancellable. Tesseract.js is lazily imported so it
+ * never bloats the main bundle.
  */
 import type { PdfPageExtraction } from '../types'
 import { loadPdfDocument, renderPdfPageToCanvas } from './pdfExtract'
 
-/** Default cap on pages OCR'd in one run, to keep the browser responsive. */
-export const DEFAULT_OCR_PAGE_LIMIT = 8
+/** Default cap on pages OCR'd in one run. Documents up to this size are processed in full. */
+export const DEFAULT_OCR_PAGE_LIMIT = 500
 
 /** Progress emitted as OCR works through the pages. */
 export interface OcrProgress {
@@ -30,7 +31,7 @@ export interface OcrProgress {
 }
 
 export interface OcrOptions {
-  /** Explicit page numbers to OCR; defaults to the first {@link DEFAULT_OCR_PAGE_LIMIT}. */
+  /** Explicit page numbers to OCR; defaults to the whole document up to {@link DEFAULT_OCR_PAGE_LIMIT}. */
   pages?: number[]
   maxPages?: number
   onProgress?: (progress: OcrProgress) => void
