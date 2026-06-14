@@ -1,22 +1,24 @@
-import type { PdfOcrProgress as PdfOcrProgressType } from '../types'
+import type { PdfOcrProgress } from '../types'
 
-export function PdfOcrProgress({ progress }: { progress: PdfOcrProgressType | null }) {
+export function PdfOcrProgressPanel({ progress }: { progress: PdfOcrProgress | null }) {
   if (!progress) return null
-  const pct = progress.totalPages === 0 ? 0 : Math.round((progress.currentPage / progress.totalPages) * 100)
+  const pct = progress.totalPages > 0
+    ? Math.round((progress.currentPage / progress.totalPages) * 100)
+    : 0
 
   return (
-    <div className="ocr-progress" role="status" aria-live="polite">
-      <div className="ocr-progress__top">
+    <section className="ocr-progress" aria-live="polite">
+      <div>
         <strong>{progress.message ?? 'Running OCR'}</strong>
-        <span>{pct}%</span>
+        <span>
+          {progress.totalPages > 0
+            ? `Page ${progress.currentPage} of ${progress.totalPages}`
+            : progress.status}
+        </span>
       </div>
-      <div className="ocr-progress__bar" aria-hidden="true">
+      <div className="ocr-progress__bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
         <span style={{ width: `${pct}%` }} />
       </div>
-      <p>
-        Page {progress.currentPage} of {progress.totalPages} · {progress.status.replace('_', ' ')}
-      </p>
-    </div>
+    </section>
   )
 }
-

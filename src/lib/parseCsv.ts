@@ -8,6 +8,7 @@
 import Papa from 'papaparse'
 import type { Dataset, ParseIssue } from '../types'
 import { buildDataset, FileParseError } from './dataset'
+import { detectWideFinancialTable } from './financialCsv'
 
 /**
  * Parse a CSV/TSV File (or Blob) into a fully profiled Dataset.
@@ -27,12 +28,14 @@ export function parseCsvFile(file: File): Promise<Dataset> {
             message: e.message,
             row: typeof e.row === 'number' ? e.row : undefined,
           }))
-          resolve(
-            buildDataset(
-              { fileName: file.name, fileSize: file.size },
-              { fields: results.meta.fields ?? [], records: results.data, issues },
-            ),
-          )
+          const fields = results.meta.fields ?? []
+          // If the CSV is a wide financial statement, route it through the
+          // finance-aware path; otherwise keep the original generic table.
+          const financial = detectWideFinancialTable(fields, results.data)
+          const table = financial
+            ? { ...financial, issues: [...issues, ...financial.issues] }
+            : { fields, records: results.data, issues }
+          resolve(buildDataset({ fileName: file.name, fileSize: file.size }, table))
         } catch (err) {
           reject(err)
         }

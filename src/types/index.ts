@@ -125,8 +125,10 @@ export interface FinancialAnalysis {
   notes: string[]
 }
 
+/** Where a reconstructed financial document came from. */
 export type FinancialSourceType = 'pdf' | 'csv' | 'xlsx' | 'xml' | 'unknown'
 
+/** How the text or table content behind a financial document was obtained. */
 export type FinancialExtractionMode =
   | 'embedded_text'
   | 'ocr'
@@ -134,6 +136,8 @@ export type FinancialExtractionMode =
   | 'structured_table'
   | 'xml'
   | 'none'
+
+export type ExtractionMode = 'embedded_text' | 'ocr' | 'mixed' | 'none'
 
 export type FinancialStatementKind =
   | 'income_statement'
@@ -183,6 +187,21 @@ export interface FinancialPageExtraction {
   lineCount: number
   quality: number
   warnings: FinancialWarning[]
+  embeddedText?: string
+  ocrText?: string
+  textLength?: number
+  confidence?: number
+}
+
+/** Raw page extraction used by the PDF/OCR runtime layer before reconstruction. */
+export interface PdfPageExtraction {
+  pageNumber: number
+  embeddedText?: string
+  ocrText?: string
+  extractionMode: 'embedded_text' | 'ocr' | 'none'
+  textLength: number
+  confidence?: number
+  warnings: string[]
 }
 
 export interface FinancialLineItem {

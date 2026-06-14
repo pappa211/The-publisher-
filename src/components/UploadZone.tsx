@@ -32,7 +32,7 @@ function UploadIcon() {
   )
 }
 
-/** The pre-upload empty state: drag-and-drop / browse + helpful guidance. */
+/** The pre-upload empty state: drag-and-drop / browse plus sample files. */
 export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -50,7 +50,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFile(file)
-    e.target.value = '' // allow re-selecting the same file
+    e.target.value = ''
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {

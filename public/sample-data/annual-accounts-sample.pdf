@@ -1,74 +1,311 @@
-%PDF-1.3
-%“Œ‹ž ReportLab Generated PDF document (opensource)
+%PDF-1.4
 1 0 obj
-<<
-/F1 2 0 R /F2 3 0 R
->>
+<< /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<<
-/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
->>
+<< /Type /Pages /Kids [3 0 R 6 0 R 8 0 R] /Count 3 >>
 endobj
 3 0 obj
-<<
-/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
->>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<<
-/Contents 8 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 7 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 1966 >>
+stream
+BT
+/F1 15 Tf
+1 0 0 1 70 760 Tm (Example Holdings PLC) Tj
+/F1 10 Tf
+1 0 0 1 70 740 Tm (Annual report and consolidated financial statements 2025) Tj
+/F1 13 Tf
+1 0 0 1 70 700 Tm (Consolidated income statement) Tj
+/F1 10 Tf
+1 0 0 1 70 680 Tm (For the year ended 31 December 2025) Tj
+/F1 10 Tf
+1 0 0 1 70 660 Tm (Amounts in NOK thousand) Tj
+/F1 10.5 Tf
+1 0 0 1 330 620 Tm (2025) Tj
+/F1 10.5 Tf
+1 0 0 1 430 620 Tm (2024) Tj
+/F1 10.5 Tf
+1 0 0 1 70 600 Tm (Revenue) Tj
+/F1 10.5 Tf
+1 0 0 1 330 600 Tm (125,000) Tj
+/F1 10.5 Tf
+1 0 0 1 430 600 Tm (111,500) Tj
+/F1 10.5 Tf
+1 0 0 1 70 580 Tm (Cost of sales) Tj
+/F1 10.5 Tf
+1 0 0 1 330 580 Tm (\(73,500\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 580 Tm (\(66,800\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 560 Tm (Gross profit) Tj
+/F1 10.5 Tf
+1 0 0 1 330 560 Tm (51,500) Tj
+/F1 10.5 Tf
+1 0 0 1 430 560 Tm (44,700) Tj
+/F1 10.5 Tf
+1 0 0 1 70 540 Tm (Operating expenses) Tj
+/F1 10.5 Tf
+1 0 0 1 330 540 Tm (\(23,800\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 540 Tm (\(21,400\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 520 Tm (EBITDA) Tj
+/F1 10.5 Tf
+1 0 0 1 330 520 Tm (27,700) Tj
+/F1 10.5 Tf
+1 0 0 1 430 520 Tm (23,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 500 Tm (Depreciation and amortization) Tj
+/F1 10.5 Tf
+1 0 0 1 330 500 Tm (\(6,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 500 Tm (\(5,900\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 480 Tm (Operating profit) Tj
+/F1 10.5 Tf
+1 0 0 1 330 480 Tm (21,500) Tj
+/F1 10.5 Tf
+1 0 0 1 430 480 Tm (17,400) Tj
+/F1 10.5 Tf
+1 0 0 1 70 460 Tm (Finance costs) Tj
+/F1 10.5 Tf
+1 0 0 1 330 460 Tm (\(3,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 460 Tm (\(2,800\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 440 Tm (Profit before tax) Tj
+/F1 10.5 Tf
+1 0 0 1 330 440 Tm (19,300) Tj
+/F1 10.5 Tf
+1 0 0 1 430 440 Tm (15,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 420 Tm (Income tax expense) Tj
+/F1 10.5 Tf
+1 0 0 1 330 420 Tm (\(4,250\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 420 Tm (\(3,370\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 400 Tm (Profit for the year) Tj
+/F1 10.5 Tf
+1 0 0 1 330 400 Tm (15,050) Tj
+/F1 10.5 Tf
+1 0 0 1 430 400 Tm (11,930) Tj
+ET
+endstream
 endobj
 5 0 obj
-<<
-/PageMode /UseNone /Pages 7 0 R /Type /Catalog
->>
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 6 0 obj
-<<
-/Author (anonymous) /CreationDate (D:20260614235600+02'00') /Creator (anonymous) /Keywords () /ModDate (D:20260614235600+02'00') /Producer (ReportLab PDF Library - \(opensource\)) 
-  /Subject (unspecified) /Title (untitled) /Trapped /False
->>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
-<<
-/Count 1 /Kids [ 4 0 R ] /Type /Pages
->>
+<< /Length 2156 >>
+stream
+BT
+/F1 13 Tf
+1 0 0 1 70 760 Tm (Example Holdings PLC) Tj
+/F1 13 Tf
+1 0 0 1 70 740 Tm (Consolidated statement of financial position) Tj
+/F1 10 Tf
+1 0 0 1 70 720 Tm (As at 31 December 2025) Tj
+/F1 10 Tf
+1 0 0 1 70 700 Tm (Amounts in NOK thousand) Tj
+/F1 10.5 Tf
+1 0 0 1 330 660 Tm (2025) Tj
+/F1 10.5 Tf
+1 0 0 1 430 660 Tm (2024) Tj
+/F1 10.5 Tf
+1 0 0 1 70 640 Tm (Non-current assets) Tj
+/F1 10.5 Tf
+1 0 0 1 330 640 Tm (172,000) Tj
+/F1 10.5 Tf
+1 0 0 1 430 640 Tm (160,000) Tj
+/F1 10.5 Tf
+1 0 0 1 70 620 Tm (Inventories) Tj
+/F1 10.5 Tf
+1 0 0 1 330 620 Tm (38,500) Tj
+/F1 10.5 Tf
+1 0 0 1 430 620 Tm (34,200) Tj
+/F1 10.5 Tf
+1 0 0 1 70 600 Tm (Trade receivables) Tj
+/F1 10.5 Tf
+1 0 0 1 330 600 Tm (42,100) Tj
+/F1 10.5 Tf
+1 0 0 1 430 600 Tm (39,800) Tj
+/F1 10.5 Tf
+1 0 0 1 70 580 Tm (Cash and cash equivalents) Tj
+/F1 10.5 Tf
+1 0 0 1 330 580 Tm (27,600) Tj
+/F1 10.5 Tf
+1 0 0 1 430 580 Tm (22,100) Tj
+/F1 10.5 Tf
+1 0 0 1 70 560 Tm (Current assets) Tj
+/F1 10.5 Tf
+1 0 0 1 330 560 Tm (108,200) Tj
+/F1 10.5 Tf
+1 0 0 1 430 560 Tm (96,100) Tj
+/F1 10.5 Tf
+1 0 0 1 70 540 Tm (Total assets) Tj
+/F1 10.5 Tf
+1 0 0 1 330 540 Tm (280,200) Tj
+/F1 10.5 Tf
+1 0 0 1 430 540 Tm (256,100) Tj
+/F1 10.5 Tf
+1 0 0 1 70 520 Tm (Share capital) Tj
+/F1 10.5 Tf
+1 0 0 1 330 520 Tm (15,000) Tj
+/F1 10.5 Tf
+1 0 0 1 430 520 Tm (15,000) Tj
+/F1 10.5 Tf
+1 0 0 1 70 500 Tm (Retained earnings) Tj
+/F1 10.5 Tf
+1 0 0 1 330 500 Tm (87,300) Tj
+/F1 10.5 Tf
+1 0 0 1 430 500 Tm (72,250) Tj
+/F1 10.5 Tf
+1 0 0 1 70 480 Tm (Total equity) Tj
+/F1 10.5 Tf
+1 0 0 1 330 480 Tm (102,300) Tj
+/F1 10.5 Tf
+1 0 0 1 430 480 Tm (87,250) Tj
+/F1 10.5 Tf
+1 0 0 1 70 460 Tm (Non-current liabilities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 460 Tm (109,000) Tj
+/F1 10.5 Tf
+1 0 0 1 430 460 Tm (105,000) Tj
+/F1 10.5 Tf
+1 0 0 1 70 440 Tm (Current liabilities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 440 Tm (68,900) Tj
+/F1 10.5 Tf
+1 0 0 1 430 440 Tm (63,850) Tj
+/F1 10.5 Tf
+1 0 0 1 70 420 Tm (Total liabilities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 420 Tm (177,900) Tj
+/F1 10.5 Tf
+1 0 0 1 430 420 Tm (168,850) Tj
+/F1 10.5 Tf
+1 0 0 1 70 400 Tm (Total equity and liabilities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 400 Tm (280,200) Tj
+/F1 10.5 Tf
+1 0 0 1 430 400 Tm (256,100) Tj
+ET
+endstream
 endobj
 8 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1201
->>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2182 >>
 stream
-Gat=k?#S1G'Sc)P'ttYY)#O(aQS:.I5Qe8tp*Ol6"LUg8dP:_a-Z0miVOk,/dkjMV4aqd!^;:2o+7B.]eqC]*OZ,4hE$2J5iK?egqb5km?MN\K\G"5V$NHaiK*r,fBE2M#TN52]AnuG[rio^H<fVR?q0#8GWk,8J<Oj;t?.lcrX1S'ORJe>9=2Po#2Y1QDFb2$?Q(\$]DqE5DrK+$+[pM=]mUrkAbPH\K(sZH&jI.N46!NgS\uFFr<S\nc4o/MBCId)'q&03(E$6+\asa!dTNi8d]*ANip2[O\]2;nu@Uq,F$('3]ST*V[Hufh$hRW7@p7.G,'+"o_(e^&r"o:X'\On:T.ToS#6ue$)gQ?)>g2c</"<5'sj4QcXr5o:-CAouB-`QW\Yt/Z"((Gou.#36;5AZgt-(AbXXL_Bt1_iKu16mlP'V*>&0!ptnAE1Za2n7u+rl`;ubH@jp9LK8r0SM(mE$KFCWj$0_^tXA38E@Be2Hr\_nhEKJM0U8MFKn(W"Tt=W'[<J`s1#7F`$4Vhj6AO*'8hC^$e=i!bkuS:#tBUrN&<qhCt:$e.4_2$6\kc]`ob?L=)N(F%-@8=<AoYqTF^p2SJ/ULAQk$3kKks\!acE^@+2J_=#KY>I8o3b&NF<up<ch9Mu'AOI>mnaDO^Lq@^k1ef.,P+SIVr&7h*Gm5e`p]!mQm[JI_Q%VUrO]YFgLa.QOhs/\FVOBV&df_`tj5XQf6I:Ep6i?s/q7Lg$TN'@:^V$RJ5lk'ld!mV`Ree7"3s]2bZ2##^_3,SSa,/8I,c[oHFWY?"afa\d>:N*L=&jKn8BOWOE&V;YAZX/!%k5^6sDO^-Wb)oYp024`c+'()(nhX<8[(Q,aXBtPU<O[@ebT.j4EfMVV[>[j=X)Z#k$.^<GLW<h^cg-.BsbP%h]>kJ'g`"0AhNV<2<q[S"(dJ;B7g;=29l>Qe.'Wfsa\I/Y*k?kB\5Nb3Inq.4@T_^YA-4HVIqhkXjE1j`<m'hjVf,ZKKD:YL#(;b+><=`##0_342P[H&hfsQ_S$LO7AEHePbW5@Esf1mPSIK;hHkD16.Hi]apqIIb9@bb(c/=?%iLL"LiX:IC'jD^+sr<2n8LHNsl\F\LE;e;bQ\l;8S0BYR"]'f$;[=Ged2><M\M0tpEa\fXf!g_'6!FABuZnCq=%\HP:%_Voh^L[=Ra+F)XjMa>e?gD&~>endstream
+BT
+/F1 13 Tf
+1 0 0 1 70 760 Tm (Example Holdings PLC) Tj
+/F1 13 Tf
+1 0 0 1 70 740 Tm (Consolidated statement of cash flows) Tj
+/F1 10 Tf
+1 0 0 1 70 720 Tm (For the year ended 31 December 2025) Tj
+/F1 10 Tf
+1 0 0 1 70 700 Tm (Amounts in NOK thousand) Tj
+/F1 10.5 Tf
+1 0 0 1 330 660 Tm (2025) Tj
+/F1 10.5 Tf
+1 0 0 1 430 660 Tm (2024) Tj
+/F1 10.5 Tf
+1 0 0 1 70 640 Tm (Profit before tax) Tj
+/F1 10.5 Tf
+1 0 0 1 330 640 Tm (19,300) Tj
+/F1 10.5 Tf
+1 0 0 1 430 640 Tm (15,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 620 Tm (Depreciation and amortization) Tj
+/F1 10.5 Tf
+1 0 0 1 330 620 Tm (6,200) Tj
+/F1 10.5 Tf
+1 0 0 1 430 620 Tm (5,900) Tj
+/F1 10.5 Tf
+1 0 0 1 70 600 Tm (Change in working capital) Tj
+/F1 10.5 Tf
+1 0 0 1 330 600 Tm (\(2,700\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 600 Tm (\(1,800\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 580 Tm (Income taxes paid) Tj
+/F1 10.5 Tf
+1 0 0 1 330 580 Tm (\(3,900\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 580 Tm (\(3,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 560 Tm (Net cash from operating activities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 560 Tm (18,900) Tj
+/F1 10.5 Tf
+1 0 0 1 430 560 Tm (16,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 540 Tm (Purchase of property plant and equipment) Tj
+/F1 10.5 Tf
+1 0 0 1 330 540 Tm (\(16,400\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 540 Tm (\(12,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 520 Tm (Net cash used in investing activities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 520 Tm (\(16,400\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 520 Tm (\(12,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 500 Tm (Proceeds from borrowings) Tj
+/F1 10.5 Tf
+1 0 0 1 330 500 Tm (9,000) Tj
+/F1 10.5 Tf
+1 0 0 1 430 500 Tm (6,500) Tj
+/F1 10.5 Tf
+1 0 0 1 70 480 Tm (Repayment of borrowings) Tj
+/F1 10.5 Tf
+1 0 0 1 330 480 Tm (\(6,000\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 480 Tm (\(5,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 460 Tm (Dividends paid) Tj
+/F1 10.5 Tf
+1 0 0 1 330 460 Tm (\(5,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 460 Tm (\(4,300\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 440 Tm (Net cash used in financing activities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 440 Tm (\(2,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 440 Tm (\(3,000\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 420 Tm (Cash and cash equivalents at end of period) Tj
+/F1 10.5 Tf
+1 0 0 1 330 420 Tm (22,400) Tj
+/F1 10.5 Tf
+1 0 0 1 430 420 Tm (22,100) Tj
+ET
+endstream
 endobj
 xref
-0 9
-0000000000 65535 f 
-0000000061 00000 n 
-0000000102 00000 n 
-0000000209 00000 n 
-0000000321 00000 n 
-0000000524 00000 n 
-0000000592 00000 n 
-0000000853 00000 n 
-0000000912 00000 n 
+0 10
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000127 00000 n
+0000000253 00000 n
+0000002271 00000 n
+0000002341 00000 n
+0000002467 00000 n
+0000004675 00000 n
+0000004801 00000 n
 trailer
-<<
-/ID 
-[<ab2b32c780f8838f8b3658ca4e481233><ab2b32c780f8838f8b3658ca4e481233>]
-% ReportLab generated PDF document -- digest (opensource)
-
-/Info 6 0 R
-/Root 5 0 R
-/Size 9
->>
+<< /Size 10 /Root 1 0 R >>
 startxref
-2204
+7035
 %%EOF

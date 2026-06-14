@@ -48,10 +48,8 @@ function IssuesNote({ issues }: { issues: ParseIssue[] }) {
 }
 
 /**
- * The post-upload workspace. It profiles the dataset into a generic report
- * plan, then offers three depths of detail: the interactive Report, the
- * per-column diagnostics, and the raw data table. A single set of filters is
- * shared across the report and the table.
+ * The post-upload workspace. Financial documents open first in the
+ * reconstruction view; generic data still gets the original report planner.
  */
 export function Workspace({
   dataset,
@@ -73,7 +71,6 @@ export function Workspace({
   const roleByName = useMemo(() => new Map(roles.map((r) => [r.name, r])), [roles])
   const filteredRows = useMemo(() => applyFilters(dataset.rows, filters), [dataset.rows, filters])
 
-  // One value per column: selecting a new value replaces the old filter.
   const handleFilter = useCallback((column: string, value: string) => {
     setFilters((prev) => [...prev.filter((f) => f.column !== column), { column, value }])
   }, [])

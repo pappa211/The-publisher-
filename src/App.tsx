@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import './App.css'
 import type { AppStatus, Dataset, PdfOcrProgress } from './types'
-import { FileParseError, loadSampleDataset, parseFile } from './lib/parseFile'
+import { FileParseError, loadSampleFile, parseFile } from './lib/parseFile'
 import { Header } from './components/Header'
 import { UploadZone } from './components/UploadZone'
 import { Workspace } from './components/Workspace'
@@ -11,17 +11,19 @@ const GENERIC_ERROR = 'Something went wrong while reading that file. Please try 
 export default function App() {
   const [status, setStatus] = useState<AppStatus>('idle')
   const [dataset, setDataset] = useState<Dataset | null>(null)
-  const [currentFile, setCurrentFile] = useState<File | null>(null)
+  const [sourceFile, setSourceFile] = useState<File | null>(null)
   const [ocrBusy, setOcrBusy] = useState(false)
   const [ocrProgress, setOcrProgress] = useState<PdfOcrProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const runParse = useCallback(async (work: () => Promise<Dataset>) => {
+  const runParse = useCallback(async (load: () => Promise<File>) => {
     setStatus('parsing')
     setError(null)
     setOcrProgress(null)
     try {
-      const result = await work()
+      const file = await load()
+      setSourceFile(file)
+      const result = await parseFile(file)
       setDataset(result)
       setStatus('ready')
     } catch (err) {
@@ -32,26 +34,24 @@ export default function App() {
 
   const handleFile = useCallback(
     (file: File) => {
-      setCurrentFile(file)
-      void runParse(() => parseFile(file))
+      void runParse(() => Promise.resolve(file))
     },
     [runParse],
   )
 
   const handleSample = useCallback(
     (file?: string) => {
-      void runParse(() => loadSampleDataset(file))
-      setCurrentFile(null)
+      void runParse(() => loadSampleFile(file))
     },
     [runParse],
   )
 
   const handleRunOcr = useCallback(() => {
-    if (!currentFile) return
+    if (!sourceFile) return
     setOcrBusy(true)
     setError(null)
     setOcrProgress({ currentPage: 0, totalPages: 0, status: 'preparing', message: 'Preparing local OCR' })
-    void parseFile(currentFile, {
+    void parseFile(sourceFile, {
       forceOcr: true,
       onOcrProgress: setOcrProgress,
     })
@@ -65,11 +65,11 @@ export default function App() {
       .finally(() => {
         setOcrBusy(false)
       })
-  }, [currentFile])
+  }, [sourceFile])
 
   const handleReset = useCallback(() => {
     setDataset(null)
-    setCurrentFile(null)
+    setSourceFile(null)
     setStatus('idle')
     setOcrBusy(false)
     setOcrProgress(null)
@@ -86,7 +86,7 @@ export default function App() {
           <Workspace
             key={dataset.parsedAt}
             dataset={dataset}
-            onRunOcr={currentFile ? handleRunOcr : undefined}
+            onRunOcr={sourceFile ? handleRunOcr : undefined}
             ocrBusy={ocrBusy}
             ocrProgress={ocrProgress}
           />

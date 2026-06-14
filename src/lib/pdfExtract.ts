@@ -1,215 +1,180 @@
-import * as pdfjs from 'pdfjs-dist'
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
-import type { FinancialExtractionMode, FinancialPageExtraction, FinancialWarning, PdfOcrProgress } from '../types'
+/**
+ * Client-side PDF text extraction.
+ *
+ * This module is the only place that talks to `pdfjs-dist`. It loads a PDF in
+ * the browser, pulls embedded text out of each page in a layout-aware way, and
+ * can rasterize a page to a canvas for OCR. The file is never uploaded.
+ */
+import type { PdfPageExtraction } from '../types'
 
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+interface PdfTextItem {
+  str: string
+  transform: number[]
+  width: number
+  height: number
+  hasEOL?: boolean
+}
 
-export interface PdfExtractionResult {
-  pages: FinancialPageExtraction[]
+interface PdfPage {
+  getTextContent(): Promise<{ items: unknown[] }>
+  getViewport(opts: { scale: number }): { width: number; height: number }
+  render(opts: {
+    canvas?: HTMLCanvasElement
+    canvasContext: CanvasRenderingContext2D
+    viewport: unknown
+  }): {
+    promise: Promise<void>
+  }
+  cleanup?(): void
+}
+
+interface PdfDocument {
+  numPages: number
+  getPage(n: number): Promise<PdfPage>
+  destroy(): Promise<void>
+}
+
+export const MIN_PAGE_TEXT_CHARS = 80
+
+export interface PdfExtractResult {
   pageCount: number
-  extractionMode: FinancialExtractionMode
-  ocrAvailable: boolean
-  ocrReason?: string
+  pages: PdfPageExtraction[]
+  warnings: string[]
 }
 
-export interface PdfExtractionOptions {
-  forceOcr?: boolean
-  maxOcrPages?: number
-  onOcrProgress?: (progress: PdfOcrProgress) => void
-}
+let workerReady = false
 
-const DEFAULT_MAX_OCR_PAGES = 8
-
-function warn(message: string, sourcePage?: number): FinancialWarning {
-  return { message, severity: 'warning', sourcePage }
-}
-
-function itemText(item: unknown): string {
-  if (item && typeof item === 'object' && 'str' in item) {
-    return String((item as { str: unknown }).str ?? '')
+async function loadPdfjs(): Promise<typeof import('pdfjs-dist')> {
+  const pdfjs = await import('pdfjs-dist')
+  if (!workerReady) {
+    const workerUrl = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
+    workerReady = true
   }
-  return ''
+  return pdfjs
 }
 
-function itemTransform(item: unknown): { x: number; y: number } {
-  if (item && typeof item === 'object' && 'transform' in item) {
-    const transform = (item as { transform?: unknown }).transform
-    if (Array.isArray(transform) && transform.length >= 6) {
-      return { x: Number(transform[4]) || 0, y: Number(transform[5]) || 0 }
-    }
+export async function loadPdfDocument(file: File): Promise<PdfDocument> {
+  const pdfjs = await loadPdfjs()
+  const data = new Uint8Array(await file.arrayBuffer())
+  const task = pdfjs.getDocument({ data })
+  const proxy = (await task.promise) as unknown as {
+    numPages: number
+    getPage(n: number): Promise<PdfPage>
   }
-  return { x: 0, y: 0 }
+  return {
+    numPages: proxy.numPages,
+    getPage: (n: number) => proxy.getPage(n),
+    destroy: () => task.destroy(),
+  }
 }
 
-function textItemsToLines(items: unknown[]): string[] {
-  const grouped = new Map<number, { x: number; text: string }[]>()
-  for (const item of items) {
-    const text = itemText(item).trim()
-    if (!text) continue
-    const { x, y } = itemTransform(item)
-    const key = Math.round(y / 3) * 3
-    const line = grouped.get(key) ?? []
-    line.push({ x, text })
-    grouped.set(key, line)
+function itemsToLines(items: PdfTextItem[]): string {
+  const frags = items
+    .filter((it) => typeof it.str === 'string')
+    .map((it) => ({ str: it.str, x: it.transform[4], y: it.transform[5], w: it.width }))
+    .filter((f) => f.str.trim() !== '' || f.w > 0)
+
+  if (frags.length === 0) return ''
+
+  const sorted = [...frags].sort((a, b) => b.y - a.y || a.x - b.x)
+  const lines: { y: number; frags: typeof frags }[] = []
+  const yTolerance = 3
+  for (const frag of sorted) {
+    const line = lines.find((l) => Math.abs(l.y - frag.y) <= yTolerance)
+    if (line) line.frags.push(frag)
+    else lines.push({ y: frag.y, frags: [frag] })
   }
 
-  return [...grouped.entries()]
-    .sort((a, b) => b[0] - a[0])
-    .map(([, line]) => line.sort((a, b) => a.x - b.x).map((part) => part.text).join(' '))
-    .map((line) => line.replace(/\s+/g, ' ').trim())
-    .filter(Boolean)
-}
-
-function scorePageText(text: string): number {
-  const lineCount = text.split(/\r?\n/).filter((line) => line.trim()).length
-  const numberLines = text.split(/\r?\n/).filter((line) => /\d[\d\s.,()-]*\s+\d/.test(line)).length
-  const statementSignals = /(income statement|statement of financial position|balance sheet|cash flow|revenue|total assets|profit before tax|kontantstrøm|balanse|resultatregnskap)/i.test(text)
-  const densityScore = Math.min(0.35, text.length / 2500)
-  const lineScore = Math.min(0.25, lineCount / 70)
-  const tableScore = Math.min(0.25, numberLines / 18)
-  return Math.min(0.96, densityScore + lineScore + tableScore + (statementSignals ? 0.15 : 0))
-}
-
-function shouldSuggestOcr(pages: FinancialPageExtraction[]): string | undefined {
-  const totalText = pages.map((page) => page.text).join('\n')
-  const averageQuality = pages.length
-    ? pages.reduce((sum, page) => sum + page.quality, 0) / pages.length
-    : 0
-  if (totalText.trim().length < 250) return 'Embedded PDF text is very sparse.'
-  if (averageQuality < 0.32) return 'Embedded PDF text quality appears weak.'
-  if (!/\d[\d\s.,()-]*\s+\d/.test(totalText)) return 'No table-like financial lines were detected in embedded text.'
-  return undefined
-}
-
-async function embeddedTextPages(pdf: pdfjs.PDFDocumentProxy): Promise<FinancialPageExtraction[]> {
-  const pages: FinancialPageExtraction[] = []
-  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-    const page = await pdf.getPage(pageNumber)
-    const content = await page.getTextContent()
-    const lines = textItemsToLines(content.items as unknown[])
-    const text = lines.join('\n')
-    pages.push({
-      pageNumber,
-      extractionMode: 'embedded_text',
-      text,
-      lineCount: lines.length,
-      quality: scorePageText(text),
-      warnings: text.trim() ? [] : [warn('No embedded text was found on this page.', pageNumber)],
+  return lines
+    .map((line) => {
+      const ordered = line.frags.sort((a, b) => a.x - b.x)
+      let out = ''
+      let prevEnd: number | null = null
+      for (const frag of ordered) {
+        if (prevEnd !== null) {
+          const gap = frag.x - prevEnd
+          out += gap > 6 ? '   ' : out.endsWith(' ') || frag.str.startsWith(' ') ? '' : ' '
+        }
+        out += frag.str
+        prevEnd = frag.x + frag.w
+      }
+      return out.replace(/\s+$/g, '')
     })
-  }
-  return pages
+    .filter((line) => line.trim() !== '')
+    .join('\n')
 }
 
-async function renderPageCanvas(page: pdfjs.PDFPageProxy): Promise<HTMLCanvasElement> {
-  const viewport = page.getViewport({ scale: 1.6 })
-  const canvas = document.createElement('canvas')
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('Canvas rendering is not available in this browser.')
-  canvas.width = Math.floor(viewport.width)
-  canvas.height = Math.floor(viewport.height)
-  await page.render({ canvasContext: context, viewport }).promise
-  return canvas
+export async function extractPageText(page: PdfPage): Promise<string> {
+  const content = await page.getTextContent()
+  const text = itemsToLines(content.items as PdfTextItem[])
+  page.cleanup?.()
+  return text
 }
 
-async function ocrPages(
-  pdf: pdfjs.PDFDocumentProxy,
-  embeddedPages: FinancialPageExtraction[],
-  options: PdfExtractionOptions,
-): Promise<FinancialPageExtraction[]> {
-  const maxPages = Math.max(1, options.maxOcrPages ?? DEFAULT_MAX_OCR_PAGES)
-  const pageNumbers = embeddedPages
-    .slice(0, maxPages)
-    .map((page) => page.pageNumber)
-
-  if (pageNumbers.length === 0) return embeddedPages
-
-  const { createWorker } = await import('tesseract.js')
-  options.onOcrProgress?.({
-    currentPage: 0,
-    totalPages: pageNumbers.length,
-    status: 'preparing',
-    message: 'Preparing local OCR worker',
-  })
-
-  const worker = await createWorker('eng')
-  const byPage = new Map(embeddedPages.map((page) => [page.pageNumber, page]))
-
+export async function extractPdf(file: File): Promise<PdfExtractResult> {
+  let doc: PdfDocument
   try {
-    for (const [index, pageNumber] of pageNumbers.entries()) {
-      options.onOcrProgress?.({
-        currentPage: index + 1,
-        totalPages: pageNumbers.length,
-        status: 'recognizing',
-        message: `Running OCR on page ${pageNumber}`,
-      })
-      const page = await pdf.getPage(pageNumber)
-      const canvas = await renderPageCanvas(page)
-      const result = await worker.recognize(canvas)
-      const text = (result.data.text ?? '').trim()
-      const quality = Math.max(scorePageText(text), Math.min(0.9, (result.data.confidence ?? 0) / 100))
-      const embedded = byPage.get(pageNumber)
-      const mergedText = text || embedded?.text || ''
-      byPage.set(pageNumber, {
-        pageNumber,
-        extractionMode: text ? 'ocr' : 'embedded_text',
-        text: mergedText,
-        lineCount: mergedText.split(/\r?\n/).filter((line) => line.trim()).length,
-        quality,
-        warnings: text ? [warn('Page was parsed with local OCR; review extracted numbers.', pageNumber)] : [
-          warn('OCR produced no text; embedded text was retained.', pageNumber),
-        ],
-      })
-    }
-    options.onOcrProgress?.({
-      currentPage: pageNumbers.length,
-      totalPages: pageNumbers.length,
-      status: 'complete',
-      message: 'OCR complete',
-    })
-  } finally {
-    await worker.terminate()
-  }
-
-  return [...byPage.values()].sort((a, b) => a.pageNumber - b.pageNumber)
-}
-
-export async function extractPdf(file: File, options: PdfExtractionOptions = {}): Promise<PdfExtractionResult> {
-  const data = await file.arrayBuffer()
-  const pdf = await pdfjs.getDocument({ data }).promise
-  const embedded = await embeddedTextPages(pdf)
-  const ocrReason = shouldSuggestOcr(embedded)
-
-  if (!options.forceOcr) {
-    return {
-      pages: embedded,
-      pageCount: pdf.numPages,
-      extractionMode: 'embedded_text',
-      ocrAvailable: Boolean(ocrReason),
-      ocrReason,
-    }
-  }
-
-  try {
-    const pages = await ocrPages(pdf, embedded, options)
-    const usedOcr = pages.some((page) => page.extractionMode === 'ocr')
-    return {
-      pages,
-      pageCount: pdf.numPages,
-      extractionMode: usedOcr && embedded.some((page) => page.text.trim()) ? 'mixed' : usedOcr ? 'ocr' : 'embedded_text',
-      ocrAvailable: Boolean(ocrReason),
-      ocrReason,
-    }
+    doc = await loadPdfDocument(file)
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'OCR failed.'
-    return {
-      pages: embedded.map((page) => ({
-        ...page,
-        warnings: [...page.warnings, warn(`OCR failed gracefully: ${message}`, page.pageNumber)],
-      })),
-      pageCount: pdf.numPages,
-      extractionMode: 'embedded_text',
-      ocrAvailable: Boolean(ocrReason),
-      ocrReason: `OCR failed gracefully: ${message}`,
+    throw new Error(
+      err instanceof Error && /password/i.test(err.message)
+        ? 'That PDF is password-protected, so its text could not be read.'
+        : 'That PDF could not be opened. It may be corrupted or an unsupported format.',
+    )
+  }
+
+  const pageCount = doc.numPages
+  const pages: PdfPageExtraction[] = []
+  const warnings: string[] = []
+
+  for (let n = 1; n <= pageCount; n++) {
+    try {
+      const page = await doc.getPage(n)
+      const text = await extractPageText(page)
+      const trimmedLen = text.replace(/\s/g, '').length
+      const hasText = trimmedLen > MIN_PAGE_TEXT_CHARS
+      pages.push({
+        pageNumber: n,
+        embeddedText: text,
+        extractionMode: hasText ? 'embedded_text' : 'none',
+        textLength: text.length,
+        warnings: hasText
+          ? []
+          : ['Little or no embedded text on this page; it may be scanned or image-based.'],
+      })
+    } catch {
+      pages.push({
+        pageNumber: n,
+        extractionMode: 'none',
+        textLength: 0,
+        warnings: ['This page could not be read for text.'],
+      })
+      warnings.push(`Page ${n} could not be read for embedded text.`)
     }
   }
+
+  try {
+    await doc.destroy()
+  } catch {
+    /* ignore */
+  }
+  return { pageCount, pages, warnings }
+}
+
+export async function renderPdfPageToCanvas(
+  doc: PdfDocument,
+  pageNumber: number,
+  scale = 2,
+): Promise<HTMLCanvasElement> {
+  const page = await doc.getPage(pageNumber)
+  const viewport = page.getViewport({ scale })
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.ceil(viewport.width)
+  canvas.height = Math.ceil(viewport.height)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Could not get a 2D canvas context for PDF rendering.')
+  await page.render({ canvas, canvasContext: ctx, viewport }).promise
+  page.cleanup?.()
+  return canvas
 }

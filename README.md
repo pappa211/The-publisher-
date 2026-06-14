@@ -56,7 +56,7 @@ File upload
   -> analyst-style financial workspace
 ```
 
-The current implementation is deterministic and conservative. It preserves original labels and adds
+The implementation is deterministic and conservative. It preserves original labels and adds
 canonical classifications separately. When it is uncertain, it emits warnings rather than pretending
 the extraction is exact.
 
@@ -71,8 +71,9 @@ PDFs are handled in layers:
 5. Let the user run OCR with browser-side `tesseract.js`.
 6. Keep embedded text if OCR fails or is unavailable.
 
-OCR is experimental and intentionally local-only. It runs page by page, reports progress, and is
-bounded so large documents do not freeze the app.
+OCR is experimental and local-only with respect to the uploaded file: the document is never sent to a
+server. Tesseract engine assets are loaded by the browser on demand, then the PDF pages are processed
+locally page by page with progress reporting and graceful failure.
 
 ## Statement Coverage
 
@@ -91,12 +92,18 @@ Bundled sample files are available from the upload screen:
 
 | Sample | File | Purpose |
 | --- | --- | --- |
+| Annual accounts PDF | `public/sample-data/annual-accounts-sample.pdf` | Generated text PDF with all three primary statements |
 | Income statement | `public/sample-data/income-statement-sample.csv` | Period columns, revenue, EBIT, tax, net income |
 | Balance sheet | `public/sample-data/balance-sheet-sample.csv` | Assets, equity, liabilities, balance equation |
 | Cash flow | `public/sample-data/cash-flow-sample.csv` | Operating, investing, financing cash flows |
 | Trial balance | `public/sample-data/trial-balance-sample.csv` | Spreadsheet-style finance data |
-| Annual accounts PDF | `public/sample-data/annual-accounts-sample.pdf` | Text-based PDF extraction |
 | Football results | `public/sample-data/football-results-sample.csv` | Non-financial fallback behavior |
+
+Regenerate the safe, self-authored PDF sample with:
+
+```bash
+node scripts/make-sample-pdf.mjs
+```
 
 ## Run Locally
 
@@ -155,6 +162,7 @@ One-time repository setup:
 src/lib/parseFile.ts
 src/lib/parsePdf.ts
 src/lib/pdfExtract.ts
+src/lib/pdfOcr.ts
 src/lib/financialNumberParser.ts
 src/lib/financialConcepts.ts
 src/lib/financialStatementParser.ts
@@ -172,7 +180,7 @@ src/components/PdfOcrProgress.tsx
 ## Current Limitations
 
 - This is a heuristic reconstruction engine, not a full IFRS parser.
-- OCR quality depends on browser performance, PDF image quality, and Tesseract language data.
+- OCR quality depends on browser performance, PDF image quality, and Tesseract language assets.
 - Complex multi-column annual-report layouts may still need manual review.
 - Notes are not yet structurally extracted.
 - Subtotal checks are basic and mostly limited to obvious concepts.

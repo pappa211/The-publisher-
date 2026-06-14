@@ -1,12 +1,10 @@
-import type { FinancialDocument, PdfOcrProgress } from '../types'
+import type { FinancialDocument } from '../types'
 import { formatInt, formatPercent } from '../lib/format'
-import { PdfOcrProgress as PdfOcrProgressView } from './PdfOcrProgress'
 
 interface FinancialDocumentOverviewProps {
   document: FinancialDocument
   onRunOcr?: () => void
   ocrBusy?: boolean
-  ocrProgress?: PdfOcrProgress | null
 }
 
 function extractionLabel(mode: string): string {
@@ -17,7 +15,6 @@ export function FinancialDocumentOverview({
   document,
   onRunOcr,
   ocrBusy = false,
-  ocrProgress = null,
 }: FinancialDocumentOverviewProps) {
   const statementCount = document.statements.filter((statement) => statement.rows.length > 0).length
   const warningCount = document.warnings.length + document.statements.reduce((sum, statement) => sum + statement.warnings.length, 0)
@@ -76,8 +73,6 @@ export function FinancialDocumentOverview({
         </div>
       )}
 
-      <PdfOcrProgressView progress={ocrProgress} />
-
       {document.warnings.length > 0 && (
         <ul className="financial-warnings">
           {document.warnings.slice(0, 5).map((item, index) => (
@@ -90,4 +85,3 @@ export function FinancialDocumentOverview({
     </section>
   )
 }
-
