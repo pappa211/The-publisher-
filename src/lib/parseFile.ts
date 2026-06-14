@@ -4,14 +4,17 @@
  * It sniffs the file's extension / MIME type and dispatches to the right
  * reader: PapaParse for delimited text (CSV/TSV), SheetJS for spreadsheet
  * workbooks (Excel, OpenDocument, Apple Numbers), and a browser-native XML
- * reader for XML/XBRL financial reports. Everything runs in the browser;
- * nothing is uploaded.
+ * reader for XML/XBRL financial reports. PDF files go through embedded text
+ * extraction with optional browser OCR. Everything runs in the browser; nothing
+ * is uploaded.
  */
-import type { Dataset } from '../types'
+import type { Dataset, FinancialExtractionMode, FinancialSourceType, PdfOcrProgress } from '../types'
 import { FileParseError } from './dataset'
 import { parseCsvFile } from './parseCsv'
+import { parsePdfFile } from './parsePdf'
 import { parseSpreadsheetFile } from './parseSpreadsheet'
 import { parseXmlFile } from './parseXml'
+import { buildFinancialDocumentFromDataset } from './financialStatementParser'
 
 export { FileParseError }
 
@@ -52,6 +55,10 @@ const XML_MIME_TYPES = new Set([
   'application/xhtml+xml',
 ])
 
+const PDF_EXTENSIONS = new Set(['pdf'])
+
+const PDF_MIME_TYPES = new Set(['application/pdf'])
+
 /**
  * The `accept` value for the file input. Lists both extensions and MIME types
  * so the OS file picker pre-filters helpfully without being overly strict.
@@ -79,10 +86,17 @@ export const FILE_INPUT_ACCEPT = [
   'application/xbrl+xml',
   '.xhtml',
   'application/xhtml+xml',
+  '.pdf',
+  'application/pdf',
 ].join(',')
 
 /** Short, human-readable list of the formats we accept (for UI copy). */
-export const SUPPORTED_FORMATS_LABEL = 'CSV, Excel, Numbers, ODS, XML & XBRL'
+export const SUPPORTED_FORMATS_LABEL = 'PDF, CSV, Excel, Numbers, ODS, XML & XBRL'
+
+export interface ParseFileOptions {
+  forceOcr?: boolean
+  onOcrProgress?: (progress: PdfOcrProgress) => void
+}
 
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf('.')
@@ -104,14 +118,35 @@ export function isXmlFile(file: File): boolean {
   return XML_MIME_TYPES.has(file.type)
 }
 
+export function isPdfFile(file: File): boolean {
+  const ext = extensionOf(file.name)
+  if (ext) return PDF_EXTENSIONS.has(ext)
+  return PDF_MIME_TYPES.has(file.type)
+}
+
+function attachFinancialDocument(
+  dataset: Dataset,
+  sourceType: FinancialSourceType,
+  extractionMode: FinancialExtractionMode,
+): Dataset {
+  if (dataset.financialDocument) return dataset
+  const financialDocument = buildFinancialDocumentFromDataset(dataset, sourceType, extractionMode)
+  return financialDocument ? { ...dataset, financialDocument } : dataset
+}
+
 /**
  * Parse any supported file into a fully profiled Dataset, choosing the reader
  * from the file type. Rejects with a `FileParseError` on failure.
  */
-export function parseFile(file: File): Promise<Dataset> {
-  if (isSpreadsheetFile(file)) return parseSpreadsheetFile(file)
-  if (isXmlFile(file)) return parseXmlFile(file)
-  return parseCsvFile(file)
+export async function parseFile(file: File, options: ParseFileOptions = {}): Promise<Dataset> {
+  if (isPdfFile(file)) return parsePdfFile(file, options)
+  if (isSpreadsheetFile(file)) {
+    return attachFinancialDocument(await parseSpreadsheetFile(file), 'xlsx', 'structured_table')
+  }
+  if (isXmlFile(file)) {
+    return attachFinancialDocument(await parseXmlFile(file), 'xml', 'xml')
+  }
+  return attachFinancialDocument(await parseCsvFile(file), 'csv', 'structured_table')
 }
 
 /** A bundled sample dataset, used to demonstrate different data *shapes*. */
@@ -127,6 +162,24 @@ export interface SampleDataset {
  * different structures — never tuned for any single one of them.
  */
 export const SAMPLE_DATASETS: SampleDataset[] = [
+  {
+    id: 'income-statement',
+    label: 'Income statement',
+    file: 'income-statement-sample.csv',
+    description: 'IFRS-style profit and loss with two periods',
+  },
+  {
+    id: 'balance-sheet',
+    label: 'Balance sheet',
+    file: 'balance-sheet-sample.csv',
+    description: 'Assets, equity and liabilities with a tie-out check',
+  },
+  {
+    id: 'cash-flow',
+    label: 'Cash flow',
+    file: 'cash-flow-sample.csv',
+    description: 'Operating, investing and financing cash flows',
+  },
   {
     id: 'trade-ledger',
     label: 'Trade ledger',

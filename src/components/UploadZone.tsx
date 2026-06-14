@@ -63,10 +63,10 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   return (
     <section className="upload">
       <div className="upload__intro">
-        <h1 className="upload__headline">Turn a data file into a living document</h1>
+        <h1 className="upload__headline">Reconstruct annual accounts in your browser</h1>
         <p className="upload__sub">
-          Drop in a CSV, Excel, Numbers, ODS, XML or XBRL file and The Publisher instantly profiles it,
-          charts it and makes it explorable — all in your browser. Nothing is uploaded.
+          Drop in a PDF, annual report, trial balance, CSV, spreadsheet, XML or XBRL file. The
+          Publisher extracts statements locally and turns them into an analyst-style financial page.
         </p>
       </div>
 
@@ -84,7 +84,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
         onKeyDown={handleKeyDown}
         role="button"
         tabIndex={0}
-        aria-label="Upload a data file (CSV, Excel, Numbers, ODS, XML or XBRL)"
+        aria-label="Upload an annual account, financial statement, PDF, spreadsheet, XML or XBRL file"
       >
         <input
           ref={inputRef}
@@ -102,7 +102,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
         ) : (
           <>
             <UploadIcon />
-            <p className="dropzone__title">Drop your data file here</p>
+            <p className="dropzone__title">Drop your financial file here</p>
             <p className="dropzone__hint">
               or <span className="dropzone__link">browse your files</span>
             </p>
@@ -118,7 +118,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
       )}
 
       <div className="upload__sample">
-        <span className="muted">No file handy? Try a sample with a different shape:</span>
+        <span className="muted">No file handy? Try a financial sample:</span>
         <div className="upload__sample-grid">
           {SAMPLE_DATASETS.map((sample) => (
             <button
@@ -147,14 +147,14 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
           <span className="upload__feature-icon">📊</span>
           <div>
             <strong>Auto-profiled</strong>
-            <p>Column types, distributions and missing values, detected for you.</p>
+            <p>Periods, statement sections and key figures, detected for you.</p>
           </div>
         </li>
         <li>
           <span className="upload__feature-icon">🔎</span>
           <div>
             <strong>Explorable</strong>
-            <p>Search, sort and page through the data as an interactive report.</p>
+            <p>Review statements, checks and raw extraction trace in one workspace.</p>
           </div>
         </li>
       </ul>

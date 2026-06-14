@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import type { Dataset, Filter, ParseIssue } from '../types'
+import type { Dataset, Filter, ParseIssue, PdfOcrProgress } from '../types'
 import { inferRoles } from '../lib/roles'
 import { planReport } from '../lib/reportPlanner'
 import { applyFilters } from '../lib/aggregate'
@@ -9,14 +9,24 @@ import { DataTable } from './DataTable'
 import { ColumnProfileCard } from './ColumnProfileCard'
 import { Report } from './Report'
 import { FilterBar } from './FilterBar'
+import { FinancialWorkspace } from './FinancialWorkspace'
 
-type Tab = 'report' | 'columns' | 'data'
+type Tab = 'financial' | 'report' | 'columns' | 'data'
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'report', label: 'Report' },
-  { id: 'columns', label: 'Column diagnostics' },
-  { id: 'data', label: 'Data table' },
-]
+function tabsFor(dataset: Dataset): { id: Tab; label: string }[] {
+  return dataset.financialDocument
+    ? [
+      { id: 'financial', label: 'Financial statements' },
+      { id: 'report', label: 'Generic report' },
+      { id: 'columns', label: 'Diagnostics' },
+      { id: 'data', label: 'Raw data' },
+    ]
+    : [
+      { id: 'report', label: 'Report' },
+      { id: 'columns', label: 'Column diagnostics' },
+      { id: 'data', label: 'Data table' },
+    ]
+}
 
 function IssuesNote({ issues }: { issues: ParseIssue[] }) {
   return (
@@ -43,10 +53,21 @@ function IssuesNote({ issues }: { issues: ParseIssue[] }) {
  * per-column diagnostics, and the raw data table. A single set of filters is
  * shared across the report and the table.
  */
-export function Workspace({ dataset }: { dataset: Dataset }) {
-  const [tab, setTab] = useState<Tab>('report')
+export function Workspace({
+  dataset,
+  onRunOcr,
+  ocrBusy = false,
+  ocrProgress = null,
+}: {
+  dataset: Dataset
+  onRunOcr?: () => void
+  ocrBusy?: boolean
+  ocrProgress?: PdfOcrProgress | null
+}) {
+  const [tab, setTab] = useState<Tab>(dataset.financialDocument ? 'financial' : 'report')
   const [filters, setFilters] = useState<Filter[]>([])
 
+  const tabs = useMemo(() => tabsFor(dataset), [dataset])
   const roles = useMemo(() => inferRoles(dataset), [dataset])
   const plan = useMemo(() => planReport(dataset, roles), [dataset, roles])
   const roleByName = useMemo(() => new Map(roles.map((r) => [r.name, r])), [roles])
@@ -69,7 +90,7 @@ export function Workspace({ dataset }: { dataset: Dataset }) {
       {dataset.issues.length > 0 && <IssuesNote issues={dataset.issues} />}
 
       <div className="tabs" role="tablist">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.id}
             role="tab"
@@ -81,6 +102,15 @@ export function Workspace({ dataset }: { dataset: Dataset }) {
           </button>
         ))}
       </div>
+
+      {tab === 'financial' && dataset.financialDocument && (
+        <FinancialWorkspace
+          document={dataset.financialDocument}
+          onRunOcr={onRunOcr}
+          ocrBusy={ocrBusy}
+          ocrProgress={ocrProgress}
+        />
+      )}
 
       {tab === 'report' && (
         <Report

@@ -125,6 +125,136 @@ export interface FinancialAnalysis {
   notes: string[]
 }
 
+export type FinancialSourceType = 'pdf' | 'csv' | 'xlsx' | 'xml' | 'unknown'
+
+export type FinancialExtractionMode =
+  | 'embedded_text'
+  | 'ocr'
+  | 'mixed'
+  | 'structured_table'
+  | 'xml'
+  | 'none'
+
+export type FinancialStatementKind =
+  | 'income_statement'
+  | 'balance_sheet'
+  | 'cash_flow'
+  | 'notes'
+  | 'unknown'
+
+export type FinancialScale = 'units' | 'thousands' | 'millions' | 'unknown'
+
+export type FinancialCheckKind =
+  | 'balance_sheet_equation'
+  | 'subtotal_consistency'
+  | 'period_consistency'
+  | 'extraction_quality'
+
+export type FinancialCheckStatus = 'pass' | 'warn' | 'fail' | 'not_available'
+
+export type FinancialWarningSeverity = 'info' | 'warning' | 'error'
+
+export interface FinancialWarning {
+  message: string
+  severity: FinancialWarningSeverity
+  sourcePage?: number
+}
+
+export interface FinancialPeriod {
+  id: string
+  label: string
+  year?: number
+}
+
+export interface FinancialRawLine {
+  id: string
+  text: string
+  sourcePage?: number
+  extractionMode: FinancialExtractionMode
+  statementKind: FinancialStatementKind
+  parsed: boolean
+  confidence: number
+}
+
+export interface FinancialPageExtraction {
+  pageNumber: number
+  extractionMode: FinancialExtractionMode
+  text: string
+  lineCount: number
+  quality: number
+  warnings: FinancialWarning[]
+}
+
+export interface FinancialLineItem {
+  id: string
+  label: string
+  canonicalConcept?: string
+  values: Record<string, number | null>
+  unit?: string
+  currency?: string
+  scale?: FinancialScale
+  sourcePage?: number
+  extractionMode: FinancialExtractionMode
+  rawText: string
+  confidence: number
+  warnings: FinancialWarning[]
+}
+
+export interface FinancialStatement {
+  kind: FinancialStatementKind
+  title: string
+  sourcePages: number[]
+  periods: FinancialPeriod[]
+  rows: FinancialLineItem[]
+  confidence: number
+  warnings: FinancialWarning[]
+}
+
+export interface FinancialKeyFigure {
+  label: string
+  canonicalConcept: string
+  values: Record<string, number | null>
+  statementKind: FinancialStatementKind
+  sourcePage?: number
+  confidence: number
+  warning?: string
+}
+
+export interface FinancialDocumentCheck {
+  kind: FinancialCheckKind
+  status: FinancialCheckStatus
+  message: string
+  periodId?: string
+  details?: string
+}
+
+export interface FinancialDocument {
+  sourceFile: string
+  sourceType: FinancialSourceType
+  extractionMode: FinancialExtractionMode
+  confidence: number
+  pages: FinancialPageExtraction[]
+  detectedPeriods: FinancialPeriod[]
+  currency?: string
+  scale: FinancialScale
+  statements: FinancialStatement[]
+  keyFigures: FinancialKeyFigure[]
+  checks: FinancialDocumentCheck[]
+  warnings: FinancialWarning[]
+  unparsedLines: FinancialRawLine[]
+  rawLines: FinancialRawLine[]
+  pageCount?: number
+  ocrAvailable?: boolean
+  ocrReason?: string
+}
+
+export interface PdfOcrProgress {
+  currentPage: number
+  totalPages: number
+  status: 'preparing' | 'recognizing' | 'complete' | 'error'
+  message?: string
+}
+
 /** The fully parsed + profiled dataset that drives the workspace UI. */
 export interface Dataset {
   fileName: string
@@ -138,6 +268,7 @@ export interface Dataset {
   parsedAt: number
   workbook?: WorkbookMeta
   financialAnalysis?: FinancialAnalysis
+  financialDocument?: FinancialDocument
 }
 
 /** Top-level application state machine. */

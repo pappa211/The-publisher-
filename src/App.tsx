@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import './App.css'
-import type { AppStatus, Dataset } from './types'
+import type { AppStatus, Dataset, PdfOcrProgress } from './types'
 import { FileParseError, loadSampleDataset, parseFile } from './lib/parseFile'
 import { Header } from './components/Header'
 import { UploadZone } from './components/UploadZone'
@@ -11,11 +11,15 @@ const GENERIC_ERROR = 'Something went wrong while reading that file. Please try 
 export default function App() {
   const [status, setStatus] = useState<AppStatus>('idle')
   const [dataset, setDataset] = useState<Dataset | null>(null)
+  const [currentFile, setCurrentFile] = useState<File | null>(null)
+  const [ocrBusy, setOcrBusy] = useState(false)
+  const [ocrProgress, setOcrProgress] = useState<PdfOcrProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const runParse = useCallback(async (work: () => Promise<Dataset>) => {
     setStatus('parsing')
     setError(null)
+    setOcrProgress(null)
     try {
       const result = await work()
       setDataset(result)
@@ -28,6 +32,7 @@ export default function App() {
 
   const handleFile = useCallback(
     (file: File) => {
+      setCurrentFile(file)
       void runParse(() => parseFile(file))
     },
     [runParse],
@@ -36,13 +41,38 @@ export default function App() {
   const handleSample = useCallback(
     (file?: string) => {
       void runParse(() => loadSampleDataset(file))
+      setCurrentFile(null)
     },
     [runParse],
   )
 
+  const handleRunOcr = useCallback(() => {
+    if (!currentFile) return
+    setOcrBusy(true)
+    setError(null)
+    setOcrProgress({ currentPage: 0, totalPages: 0, status: 'preparing', message: 'Preparing local OCR' })
+    void parseFile(currentFile, {
+      forceOcr: true,
+      onOcrProgress: setOcrProgress,
+    })
+      .then((result) => {
+        setDataset(result)
+        setStatus('ready')
+      })
+      .catch((err) => {
+        setError(err instanceof FileParseError ? err.message : GENERIC_ERROR)
+      })
+      .finally(() => {
+        setOcrBusy(false)
+      })
+  }, [currentFile])
+
   const handleReset = useCallback(() => {
     setDataset(null)
+    setCurrentFile(null)
     setStatus('idle')
+    setOcrBusy(false)
+    setOcrProgress(null)
     setError(null)
   }, [])
 
@@ -53,7 +83,13 @@ export default function App() {
       <Header hasData={hasData} onReset={handleReset} />
       <main className="app-main">
         {status === 'ready' && dataset ? (
-          <Workspace key={dataset.parsedAt} dataset={dataset} />
+          <Workspace
+            key={dataset.parsedAt}
+            dataset={dataset}
+            onRunOcr={currentFile ? handleRunOcr : undefined}
+            ocrBusy={ocrBusy}
+            ocrProgress={ocrProgress}
+          />
         ) : (
           <UploadZone
             onFile={handleFile}
