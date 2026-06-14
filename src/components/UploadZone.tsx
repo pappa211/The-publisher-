@@ -32,7 +32,7 @@ function UploadIcon() {
   )
 }
 
-/** The pre-upload empty state: drag-and-drop / browse + helpful guidance. */
+/** The pre-upload empty state: drag-and-drop / browse plus sample files. */
 export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -50,7 +50,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFile(file)
-    e.target.value = '' // allow re-selecting the same file
+    e.target.value = ''
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
@@ -63,11 +63,10 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   return (
     <section className="upload">
       <div className="upload__intro">
-        <h1 className="upload__headline">Turn a financial document into a living report</h1>
+        <h1 className="upload__headline">Reconstruct annual accounts in your browser</h1>
         <p className="upload__sub">
-          Drop in a CSV, Excel, Numbers, ODS, XML, XBRL — or a financial <strong>PDF</strong> — and The
-          Publisher reads it in your browser, extracts the figures (with experimental OCR for scanned
-          documents) and makes them explorable. Nothing is uploaded.
+          Drop in a PDF, annual report, trial balance, CSV, spreadsheet, XML or XBRL file. The
+          Publisher extracts statements locally and turns them into an analyst-style financial page.
         </p>
       </div>
 
@@ -85,7 +84,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
         onKeyDown={handleKeyDown}
         role="button"
         tabIndex={0}
-        aria-label="Upload a data or financial document file (CSV, Excel, Numbers, ODS, XML, XBRL or PDF)"
+        aria-label="Upload an annual account, financial statement, PDF, spreadsheet, XML or XBRL file"
       >
         <input
           ref={inputRef}
@@ -103,7 +102,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
         ) : (
           <>
             <UploadIcon />
-            <p className="dropzone__title">Drop your data file here</p>
+            <p className="dropzone__title">Drop your financial file here</p>
             <p className="dropzone__hint">
               or <span className="dropzone__link">browse your files</span>
             </p>
@@ -119,7 +118,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
       )}
 
       <div className="upload__sample">
-        <span className="muted">No file handy? Try a sample with a different shape:</span>
+        <span className="muted">No file handy? Try a financial sample:</span>
         <div className="upload__sample-grid">
           {SAMPLE_DATASETS.map((sample) => (
             <button
@@ -148,14 +147,14 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
           <span className="upload__feature-icon">📊</span>
           <div>
             <strong>Auto-profiled</strong>
-            <p>Column types, distributions and missing values, detected for you.</p>
+            <p>Periods, statement sections and key figures, detected for you.</p>
           </div>
         </li>
         <li>
           <span className="upload__feature-icon">🔎</span>
           <div>
             <strong>Explorable</strong>
-            <p>Search, sort and page through the data as an interactive report.</p>
+            <p>Review statements, checks and raw extraction trace in one workspace.</p>
           </div>
         </li>
       </ul>

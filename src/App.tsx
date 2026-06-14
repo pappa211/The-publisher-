@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import './App.css'
-import type { AppStatus, Dataset } from './types'
+import type { AppStatus, Dataset, PdfOcrProgress } from './types'
 import { FileParseError, loadSampleFile, parseFile } from './lib/parseFile'
 import { Header } from './components/Header'
 import { UploadZone } from './components/UploadZone'
@@ -12,13 +12,14 @@ export default function App() {
   const [status, setStatus] = useState<AppStatus>('idle')
   const [dataset, setDataset] = useState<Dataset | null>(null)
   const [sourceFile, setSourceFile] = useState<File | null>(null)
+  const [ocrBusy, setOcrBusy] = useState(false)
+  const [ocrProgress, setOcrProgress] = useState<PdfOcrProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // Parse a File and keep it around — the experimental PDF/OCR path may need to
-  // re-open the original file to rasterize pages for OCR.
   const runParse = useCallback(async (load: () => Promise<File>) => {
     setStatus('parsing')
     setError(null)
+    setOcrProgress(null)
     try {
       const file = await load()
       setSourceFile(file)
@@ -45,10 +46,33 @@ export default function App() {
     [runParse],
   )
 
+  const handleRunOcr = useCallback(() => {
+    if (!sourceFile) return
+    setOcrBusy(true)
+    setError(null)
+    setOcrProgress({ currentPage: 0, totalPages: 0, status: 'preparing', message: 'Preparing local OCR' })
+    void parseFile(sourceFile, {
+      forceOcr: true,
+      onOcrProgress: setOcrProgress,
+    })
+      .then((result) => {
+        setDataset(result)
+        setStatus('ready')
+      })
+      .catch((err) => {
+        setError(err instanceof FileParseError ? err.message : GENERIC_ERROR)
+      })
+      .finally(() => {
+        setOcrBusy(false)
+      })
+  }, [sourceFile])
+
   const handleReset = useCallback(() => {
     setDataset(null)
     setSourceFile(null)
     setStatus('idle')
+    setOcrBusy(false)
+    setOcrProgress(null)
     setError(null)
   }, [])
 
@@ -59,7 +83,13 @@ export default function App() {
       <Header hasData={hasData} onReset={handleReset} />
       <main className="app-main">
         {status === 'ready' && dataset ? (
-          <Workspace key={dataset.parsedAt} dataset={dataset} sourceFile={sourceFile} />
+          <Workspace
+            key={dataset.parsedAt}
+            dataset={dataset}
+            onRunOcr={sourceFile ? handleRunOcr : undefined}
+            ocrBusy={ocrBusy}
+            ocrProgress={ocrProgress}
+          />
         ) : (
           <UploadZone
             onFile={handleFile}

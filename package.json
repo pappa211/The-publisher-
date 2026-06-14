@@ -1,9 +1,9 @@
 {
   "name": "the-publisher",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
-  "description": "Drop in CSV, spreadsheet, XML/XBRL or PDF financial documents and get an interactive financial report — fully client-side, with experimental in-browser PDF text extraction and OCR.",
+  "description": "Browser-only financial statement reconstruction prototype for PDFs, spreadsheets, CSV, XML and XBRL.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

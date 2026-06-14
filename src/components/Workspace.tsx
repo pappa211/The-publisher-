@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import type { Dataset, Filter, ParseIssue } from '../types'
+import type { Dataset, Filter, ParseIssue, PdfOcrProgress } from '../types'
 import { inferRoles } from '../lib/roles'
 import { planReport } from '../lib/reportPlanner'
 import { applyFilters } from '../lib/aggregate'
@@ -13,11 +13,20 @@ import { FinancialWorkspace } from './FinancialWorkspace'
 
 type Tab = 'financial' | 'report' | 'columns' | 'data'
 
-const BASE_TABS: { id: Tab; label: string }[] = [
-  { id: 'report', label: 'Report' },
-  { id: 'columns', label: 'Column diagnostics' },
-  { id: 'data', label: 'Data table' },
-]
+function tabsFor(dataset: Dataset): { id: Tab; label: string }[] {
+  return dataset.financialDocument
+    ? [
+      { id: 'financial', label: 'Financial statements' },
+      { id: 'report', label: 'Generic report' },
+      { id: 'columns', label: 'Diagnostics' },
+      { id: 'data', label: 'Raw data' },
+    ]
+    : [
+      { id: 'report', label: 'Report' },
+      { id: 'columns', label: 'Column diagnostics' },
+      { id: 'data', label: 'Data table' },
+    ]
+}
 
 function IssuesNote({ issues }: { issues: ParseIssue[] }) {
   return (
@@ -39,26 +48,29 @@ function IssuesNote({ issues }: { issues: ParseIssue[] }) {
 }
 
 /**
- * The post-upload workspace. It profiles the dataset into a generic report
- * plan, then offers three depths of detail: the interactive Report, the
- * per-column diagnostics, and the raw data table. A single set of filters is
- * shared across the report and the table.
+ * The post-upload workspace. Financial documents open first in the
+ * reconstruction view; generic data still gets the original report planner.
  */
-export function Workspace({ dataset, sourceFile }: { dataset: Dataset; sourceFile?: File | null }) {
-  const hasFinancialDoc = dataset.financialDocument != null
-  const tabs = useMemo<{ id: Tab; label: string }[]>(
-    () => (hasFinancialDoc ? [{ id: 'financial', label: 'Financial document' }, ...BASE_TABS] : BASE_TABS),
-    [hasFinancialDoc],
-  )
-  const [tab, setTab] = useState<Tab>(hasFinancialDoc ? 'financial' : 'report')
+export function Workspace({
+  dataset,
+  onRunOcr,
+  ocrBusy = false,
+  ocrProgress = null,
+}: {
+  dataset: Dataset
+  onRunOcr?: () => void
+  ocrBusy?: boolean
+  ocrProgress?: PdfOcrProgress | null
+}) {
+  const [tab, setTab] = useState<Tab>(dataset.financialDocument ? 'financial' : 'report')
   const [filters, setFilters] = useState<Filter[]>([])
 
+  const tabs = useMemo(() => tabsFor(dataset), [dataset])
   const roles = useMemo(() => inferRoles(dataset), [dataset])
   const plan = useMemo(() => planReport(dataset, roles), [dataset, roles])
   const roleByName = useMemo(() => new Map(roles.map((r) => [r.name, r])), [roles])
   const filteredRows = useMemo(() => applyFilters(dataset.rows, filters), [dataset.rows, filters])
 
-  // One value per column: selecting a new value replaces the old filter.
   const handleFilter = useCallback((column: string, value: string) => {
     setFilters((prev) => [...prev.filter((f) => f.column !== column), { column, value }])
   }, [])
@@ -89,7 +101,12 @@ export function Workspace({ dataset, sourceFile }: { dataset: Dataset; sourceFil
       </div>
 
       {tab === 'financial' && dataset.financialDocument && (
-        <FinancialWorkspace document={dataset.financialDocument} sourceFile={sourceFile ?? null} />
+        <FinancialWorkspace
+          document={dataset.financialDocument}
+          onRunOcr={onRunOcr}
+          ocrBusy={ocrBusy}
+          ocrProgress={ocrProgress}
+        />
       )}
 
       {tab === 'report' && (

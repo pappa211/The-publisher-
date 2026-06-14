@@ -1,10 +1,13 @@
-line_item,2023,2022,2021
-Revenue,12450,10980,9870
-Cost of sales,-7230,-6540,-5980
-Gross profit,5220,4440,3890
-Operating expenses,-2980,-2610,-2360
-Operating profit,2240,1830,1530
-Net finance costs,-180,-210,-240
-Profit before tax,2060,1620,1290
-Tax expense,-515,-405,-322
-Net profit,1545,1215,968
+Line Item,2025,2024
+Revenue,125000,111500
+Cost of sales,-73500,-66800
+Gross profit,51500,44700
+Operating expenses,-23800,-21400
+EBITDA,27700,23300
+Depreciation and amortization,-6200,-5900
+Operating profit,21500,17400
+Finance income,900,700
+Finance costs,-3100,-2800
+Profit before tax,19300,15300
+Income tax expense,-4250,-3370
+Profit for the year,15050,11930

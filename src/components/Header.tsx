@@ -25,7 +25,7 @@ export function Header({ hasData, onReset }: { hasData: boolean; onReset: () => 
         <BrandMark />
         <div className="brand__text">
           <span className="brand__name">The Publisher</span>
-          <span className="brand__tag">Data → living document</span>
+          <span className="brand__tag">Financial statements → analyst page</span>
         </div>
       </div>
       {hasData && (

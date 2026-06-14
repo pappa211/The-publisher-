@@ -1,12 +1,16 @@
-line_item,2023,2022
-Non-current assets,8900,8100
-Current assets,4240,4070
-Cash and cash equivalents,2100,1650
-Total assets,15240,13820
-Share capital,3000,3000
-Retained earnings,6120,4980
-Total equity,9120,7980
-Non-current liabilities,3800,3500
-Current liabilities,2320,2340
-Total liabilities,6120,5840
-Total liabilities and equity,15240,13820
+Line Item,2025,2024
+Non-current assets,172000,160000
+Inventories,38500,34200
+Trade receivables,42100,39800
+Cash and cash equivalents,27600,22100
+Current assets,108200,96100
+Total assets,280200,256100
+Share capital,15000,15000
+Retained earnings,87300,72250
+Total equity,102300,87250
+Borrowings,109000,105000
+Non-current liabilities,109000,105000
+Trade payables,35800,32100
+Current liabilities,68900,63850
+Total liabilities,177900,168850
+Total equity and liabilities,280200,256100

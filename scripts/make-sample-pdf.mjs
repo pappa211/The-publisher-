@@ -6,9 +6,9 @@
  *
  *   node scripts/make-sample-pdf.mjs
  *
- * It writes a 2-page PDF: an income statement and a balance sheet, laid out in
- * label + two period columns (2023 / 2022) so the financial parser has real
- * table structure to recover.
+ * It writes a 3-page PDF: an income statement, a balance sheet and a cash flow
+ * statement, laid out in label + two period columns (2025 / 2024) so the
+ * financial parser has real table structure to recover.
  */
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -29,47 +29,72 @@ const row = (label, a, b) => ({
 })
 const title = (text, size = 15) => ({ segs: [{ x: LABEL_X, text }], size })
 const caption = (text) => ({ segs: [{ x: LABEL_X, text }], size: 10 })
-const header = () => ({ segs: [{ x: COL1_X, text: '2023' }, { x: COL2_X, text: '2022' }] })
+const header = () => ({ segs: [{ x: COL1_X, text: '2025' }, { x: COL2_X, text: '2024' }] })
 const blank = () => ({ segs: [] })
 
 const incomeStatement = [
-  title('ACME Holdings PLC'),
-  caption('Annual report and consolidated financial statements 2023'),
+  title('Example Holdings PLC'),
+  caption('Annual report and consolidated financial statements 2025'),
   blank(),
-  title('Income statement', 13),
-  caption('For the year ended 31 December 2023'),
-  caption('(in thousands of EUR)'),
+  title('Consolidated income statement', 13),
+  caption('For the year ended 31 December 2025'),
+  caption('Amounts in NOK thousand'),
   blank(),
   header(),
-  row('Revenue', '12,450', '10,980'),
-  row('Cost of sales', '(7,230)', '(6,540)'),
-  row('Gross profit', '5,220', '4,440'),
-  row('Operating expenses', '(2,980)', '(2,610)'),
-  row('Operating profit', '2,240', '1,830'),
-  row('Net finance costs', '(180)', '(210)'),
-  row('Profit before tax', '2,060', '1,620'),
-  row('Tax expense', '(515)', '(405)'),
-  row('Net profit for the year', '1,545', '1,215'),
+  row('Revenue', '125,000', '111,500'),
+  row('Cost of sales', '(73,500)', '(66,800)'),
+  row('Gross profit', '51,500', '44,700'),
+  row('Operating expenses', '(23,800)', '(21,400)'),
+  row('EBITDA', '27,700', '23,300'),
+  row('Depreciation and amortization', '(6,200)', '(5,900)'),
+  row('Operating profit', '21,500', '17,400'),
+  row('Finance costs', '(3,100)', '(2,800)'),
+  row('Profit before tax', '19,300', '15,300'),
+  row('Income tax expense', '(4,250)', '(3,370)'),
+  row('Profit for the year', '15,050', '11,930'),
 ]
 
 const balanceSheet = [
-  title('ACME Holdings PLC', 13),
-  title('Balance sheet', 13),
-  caption('As at 31 December 2023'),
-  caption('(in thousands of EUR)'),
+  title('Example Holdings PLC', 13),
+  title('Consolidated statement of financial position', 13),
+  caption('As at 31 December 2025'),
+  caption('Amounts in NOK thousand'),
   blank(),
   header(),
-  row('Non-current assets', '8,900', '8,100'),
-  row('Current assets', '4,240', '4,070'),
-  row('Cash and cash equivalents', '2,100', '1,650'),
-  row('Total assets', '15,240', '13,820'),
-  row('Share capital', '3,000', '3,000'),
-  row('Retained earnings', '6,120', '4,980'),
-  row('Total equity', '9,120', '7,980'),
-  row('Non-current liabilities', '3,800', '3,500'),
-  row('Current liabilities', '2,320', '2,340'),
-  row('Total liabilities', '6,120', '5,840'),
-  row('Total liabilities and equity', '15,240', '13,820'),
+  row('Non-current assets', '172,000', '160,000'),
+  row('Inventories', '38,500', '34,200'),
+  row('Trade receivables', '42,100', '39,800'),
+  row('Cash and cash equivalents', '27,600', '22,100'),
+  row('Current assets', '108,200', '96,100'),
+  row('Total assets', '280,200', '256,100'),
+  row('Share capital', '15,000', '15,000'),
+  row('Retained earnings', '87,300', '72,250'),
+  row('Total equity', '102,300', '87,250'),
+  row('Non-current liabilities', '109,000', '105,000'),
+  row('Current liabilities', '68,900', '63,850'),
+  row('Total liabilities', '177,900', '168,850'),
+  row('Total equity and liabilities', '280,200', '256,100'),
+]
+
+const cashFlow = [
+  title('Example Holdings PLC', 13),
+  title('Consolidated statement of cash flows', 13),
+  caption('For the year ended 31 December 2025'),
+  caption('Amounts in NOK thousand'),
+  blank(),
+  header(),
+  row('Profit before tax', '19,300', '15,300'),
+  row('Depreciation and amortization', '6,200', '5,900'),
+  row('Change in working capital', '(2,700)', '(1,800)'),
+  row('Income taxes paid', '(3,900)', '(3,100)'),
+  row('Net cash from operating activities', '18,900', '16,300'),
+  row('Purchase of property plant and equipment', '(16,400)', '(12,100)'),
+  row('Net cash used in investing activities', '(16,400)', '(12,100)'),
+  row('Proceeds from borrowings', '9,000', '6,500'),
+  row('Repayment of borrowings', '(6,000)', '(5,200)'),
+  row('Dividends paid', '(5,200)', '(4,300)'),
+  row('Net cash used in financing activities', '(2,200)', '(3,000)'),
+  row('Cash and cash equivalents at end of period', '22,400', '22,100'),
 ]
 
 function escapePdfText(text) {
@@ -91,18 +116,22 @@ function contentStream(lines) {
   return s
 }
 
-// Objects: 1 Catalog, 2 Pages, 3 Page1, 4 Contents1, 5 Font, 6 Page2, 7 Contents2.
+// Objects: 1 Catalog, 2 Pages, 3 Page1, 4 Contents1, 5 Font, 6 Page2,
+// 7 Contents2, 8 Page3, 9 Contents3.
 const stream1 = contentStream(incomeStatement)
 const stream2 = contentStream(balanceSheet)
+const stream3 = contentStream(cashFlow)
 
 const objects = [
   '<< /Type /Catalog /Pages 2 0 R >>',
-  '<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>',
+  '<< /Type /Pages /Kids [3 0 R 6 0 R 8 0 R] /Count 3 >>',
   '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
   `<< /Length ${Buffer.byteLength(stream1)} >>\nstream\n${stream1}\nendstream`,
   '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
   '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 7 0 R >>',
   `<< /Length ${Buffer.byteLength(stream2)} >>\nstream\n${stream2}\nendstream`,
+  '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 9 0 R >>',
+  `<< /Length ${Buffer.byteLength(stream3)} >>\nstream\n${stream3}\nendstream`,
 ]
 
 let pdf = '%PDF-1.4\n'

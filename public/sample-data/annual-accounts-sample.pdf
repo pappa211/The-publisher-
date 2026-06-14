@@ -3,83 +3,95 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>
+<< /Type /Pages /Kids [3 0 R 6 0 R 8 0 R] /Count 3 >>
 endobj
 3 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<< /Length 1644 >>
+<< /Length 1966 >>
 stream
 BT
 /F1 15 Tf
-1 0 0 1 70 760 Tm (ACME Holdings PLC) Tj
+1 0 0 1 70 760 Tm (Example Holdings PLC) Tj
 /F1 10 Tf
-1 0 0 1 70 740 Tm (Annual report and consolidated financial statements 2023) Tj
+1 0 0 1 70 740 Tm (Annual report and consolidated financial statements 2025) Tj
 /F1 13 Tf
-1 0 0 1 70 700 Tm (Income statement) Tj
+1 0 0 1 70 700 Tm (Consolidated income statement) Tj
 /F1 10 Tf
-1 0 0 1 70 680 Tm (For the year ended 31 December 2023) Tj
+1 0 0 1 70 680 Tm (For the year ended 31 December 2025) Tj
 /F1 10 Tf
-1 0 0 1 70 660 Tm (\(in thousands of EUR\)) Tj
+1 0 0 1 70 660 Tm (Amounts in NOK thousand) Tj
 /F1 10.5 Tf
-1 0 0 1 330 620 Tm (2023) Tj
+1 0 0 1 330 620 Tm (2025) Tj
 /F1 10.5 Tf
-1 0 0 1 430 620 Tm (2022) Tj
+1 0 0 1 430 620 Tm (2024) Tj
 /F1 10.5 Tf
 1 0 0 1 70 600 Tm (Revenue) Tj
 /F1 10.5 Tf
-1 0 0 1 330 600 Tm (12,450) Tj
+1 0 0 1 330 600 Tm (125,000) Tj
 /F1 10.5 Tf
-1 0 0 1 430 600 Tm (10,980) Tj
+1 0 0 1 430 600 Tm (111,500) Tj
 /F1 10.5 Tf
 1 0 0 1 70 580 Tm (Cost of sales) Tj
 /F1 10.5 Tf
-1 0 0 1 330 580 Tm (\(7,230\)) Tj
+1 0 0 1 330 580 Tm (\(73,500\)) Tj
 /F1 10.5 Tf
-1 0 0 1 430 580 Tm (\(6,540\)) Tj
+1 0 0 1 430 580 Tm (\(66,800\)) Tj
 /F1 10.5 Tf
 1 0 0 1 70 560 Tm (Gross profit) Tj
 /F1 10.5 Tf
-1 0 0 1 330 560 Tm (5,220) Tj
+1 0 0 1 330 560 Tm (51,500) Tj
 /F1 10.5 Tf
-1 0 0 1 430 560 Tm (4,440) Tj
+1 0 0 1 430 560 Tm (44,700) Tj
 /F1 10.5 Tf
 1 0 0 1 70 540 Tm (Operating expenses) Tj
 /F1 10.5 Tf
-1 0 0 1 330 540 Tm (\(2,980\)) Tj
+1 0 0 1 330 540 Tm (\(23,800\)) Tj
 /F1 10.5 Tf
-1 0 0 1 430 540 Tm (\(2,610\)) Tj
+1 0 0 1 430 540 Tm (\(21,400\)) Tj
 /F1 10.5 Tf
-1 0 0 1 70 520 Tm (Operating profit) Tj
+1 0 0 1 70 520 Tm (EBITDA) Tj
 /F1 10.5 Tf
-1 0 0 1 330 520 Tm (2,240) Tj
+1 0 0 1 330 520 Tm (27,700) Tj
 /F1 10.5 Tf
-1 0 0 1 430 520 Tm (1,830) Tj
+1 0 0 1 430 520 Tm (23,300) Tj
 /F1 10.5 Tf
-1 0 0 1 70 500 Tm (Net finance costs) Tj
+1 0 0 1 70 500 Tm (Depreciation and amortization) Tj
 /F1 10.5 Tf
-1 0 0 1 330 500 Tm (\(180\)) Tj
+1 0 0 1 330 500 Tm (\(6,200\)) Tj
 /F1 10.5 Tf
-1 0 0 1 430 500 Tm (\(210\)) Tj
+1 0 0 1 430 500 Tm (\(5,900\)) Tj
 /F1 10.5 Tf
-1 0 0 1 70 480 Tm (Profit before tax) Tj
+1 0 0 1 70 480 Tm (Operating profit) Tj
 /F1 10.5 Tf
-1 0 0 1 330 480 Tm (2,060) Tj
+1 0 0 1 330 480 Tm (21,500) Tj
 /F1 10.5 Tf
-1 0 0 1 430 480 Tm (1,620) Tj
+1 0 0 1 430 480 Tm (17,400) Tj
 /F1 10.5 Tf
-1 0 0 1 70 460 Tm (Tax expense) Tj
+1 0 0 1 70 460 Tm (Finance costs) Tj
 /F1 10.5 Tf
-1 0 0 1 330 460 Tm (\(515\)) Tj
+1 0 0 1 330 460 Tm (\(3,100\)) Tj
 /F1 10.5 Tf
-1 0 0 1 430 460 Tm (\(405\)) Tj
+1 0 0 1 430 460 Tm (\(2,800\)) Tj
 /F1 10.5 Tf
-1 0 0 1 70 440 Tm (Net profit for the year) Tj
+1 0 0 1 70 440 Tm (Profit before tax) Tj
 /F1 10.5 Tf
-1 0 0 1 330 440 Tm (1,545) Tj
+1 0 0 1 330 440 Tm (19,300) Tj
 /F1 10.5 Tf
-1 0 0 1 430 440 Tm (1,215) Tj
+1 0 0 1 430 440 Tm (15,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 420 Tm (Income tax expense) Tj
+/F1 10.5 Tf
+1 0 0 1 330 420 Tm (\(4,250\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 420 Tm (\(3,370\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 400 Tm (Profit for the year) Tj
+/F1 10.5 Tf
+1 0 0 1 330 400 Tm (15,050) Tj
+/F1 10.5 Tf
+1 0 0 1 430 400 Tm (11,930) Tj
 ET
 endstream
 endobj
@@ -90,102 +102,210 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
-<< /Length 1820 >>
+<< /Length 2156 >>
 stream
 BT
 /F1 13 Tf
-1 0 0 1 70 760 Tm (ACME Holdings PLC) Tj
+1 0 0 1 70 760 Tm (Example Holdings PLC) Tj
 /F1 13 Tf
-1 0 0 1 70 740 Tm (Balance sheet) Tj
+1 0 0 1 70 740 Tm (Consolidated statement of financial position) Tj
 /F1 10 Tf
-1 0 0 1 70 720 Tm (As at 31 December 2023) Tj
+1 0 0 1 70 720 Tm (As at 31 December 2025) Tj
 /F1 10 Tf
-1 0 0 1 70 700 Tm (\(in thousands of EUR\)) Tj
+1 0 0 1 70 700 Tm (Amounts in NOK thousand) Tj
 /F1 10.5 Tf
-1 0 0 1 330 660 Tm (2023) Tj
+1 0 0 1 330 660 Tm (2025) Tj
 /F1 10.5 Tf
-1 0 0 1 430 660 Tm (2022) Tj
+1 0 0 1 430 660 Tm (2024) Tj
 /F1 10.5 Tf
 1 0 0 1 70 640 Tm (Non-current assets) Tj
 /F1 10.5 Tf
-1 0 0 1 330 640 Tm (8,900) Tj
+1 0 0 1 330 640 Tm (172,000) Tj
 /F1 10.5 Tf
-1 0 0 1 430 640 Tm (8,100) Tj
+1 0 0 1 430 640 Tm (160,000) Tj
 /F1 10.5 Tf
-1 0 0 1 70 620 Tm (Current assets) Tj
+1 0 0 1 70 620 Tm (Inventories) Tj
 /F1 10.5 Tf
-1 0 0 1 330 620 Tm (4,240) Tj
+1 0 0 1 330 620 Tm (38,500) Tj
 /F1 10.5 Tf
-1 0 0 1 430 620 Tm (4,070) Tj
+1 0 0 1 430 620 Tm (34,200) Tj
 /F1 10.5 Tf
-1 0 0 1 70 600 Tm (Cash and cash equivalents) Tj
+1 0 0 1 70 600 Tm (Trade receivables) Tj
 /F1 10.5 Tf
-1 0 0 1 330 600 Tm (2,100) Tj
+1 0 0 1 330 600 Tm (42,100) Tj
 /F1 10.5 Tf
-1 0 0 1 430 600 Tm (1,650) Tj
+1 0 0 1 430 600 Tm (39,800) Tj
 /F1 10.5 Tf
-1 0 0 1 70 580 Tm (Total assets) Tj
+1 0 0 1 70 580 Tm (Cash and cash equivalents) Tj
 /F1 10.5 Tf
-1 0 0 1 330 580 Tm (15,240) Tj
+1 0 0 1 330 580 Tm (27,600) Tj
 /F1 10.5 Tf
-1 0 0 1 430 580 Tm (13,820) Tj
+1 0 0 1 430 580 Tm (22,100) Tj
 /F1 10.5 Tf
-1 0 0 1 70 560 Tm (Share capital) Tj
+1 0 0 1 70 560 Tm (Current assets) Tj
 /F1 10.5 Tf
-1 0 0 1 330 560 Tm (3,000) Tj
+1 0 0 1 330 560 Tm (108,200) Tj
 /F1 10.5 Tf
-1 0 0 1 430 560 Tm (3,000) Tj
+1 0 0 1 430 560 Tm (96,100) Tj
 /F1 10.5 Tf
-1 0 0 1 70 540 Tm (Retained earnings) Tj
+1 0 0 1 70 540 Tm (Total assets) Tj
 /F1 10.5 Tf
-1 0 0 1 330 540 Tm (6,120) Tj
+1 0 0 1 330 540 Tm (280,200) Tj
 /F1 10.5 Tf
-1 0 0 1 430 540 Tm (4,980) Tj
+1 0 0 1 430 540 Tm (256,100) Tj
 /F1 10.5 Tf
-1 0 0 1 70 520 Tm (Total equity) Tj
+1 0 0 1 70 520 Tm (Share capital) Tj
 /F1 10.5 Tf
-1 0 0 1 330 520 Tm (9,120) Tj
+1 0 0 1 330 520 Tm (15,000) Tj
 /F1 10.5 Tf
-1 0 0 1 430 520 Tm (7,980) Tj
+1 0 0 1 430 520 Tm (15,000) Tj
 /F1 10.5 Tf
-1 0 0 1 70 500 Tm (Non-current liabilities) Tj
+1 0 0 1 70 500 Tm (Retained earnings) Tj
 /F1 10.5 Tf
-1 0 0 1 330 500 Tm (3,800) Tj
+1 0 0 1 330 500 Tm (87,300) Tj
 /F1 10.5 Tf
-1 0 0 1 430 500 Tm (3,500) Tj
+1 0 0 1 430 500 Tm (72,250) Tj
 /F1 10.5 Tf
-1 0 0 1 70 480 Tm (Current liabilities) Tj
+1 0 0 1 70 480 Tm (Total equity) Tj
 /F1 10.5 Tf
-1 0 0 1 330 480 Tm (2,320) Tj
+1 0 0 1 330 480 Tm (102,300) Tj
 /F1 10.5 Tf
-1 0 0 1 430 480 Tm (2,340) Tj
+1 0 0 1 430 480 Tm (87,250) Tj
 /F1 10.5 Tf
-1 0 0 1 70 460 Tm (Total liabilities) Tj
+1 0 0 1 70 460 Tm (Non-current liabilities) Tj
 /F1 10.5 Tf
-1 0 0 1 330 460 Tm (6,120) Tj
+1 0 0 1 330 460 Tm (109,000) Tj
 /F1 10.5 Tf
-1 0 0 1 430 460 Tm (5,840) Tj
+1 0 0 1 430 460 Tm (105,000) Tj
 /F1 10.5 Tf
-1 0 0 1 70 440 Tm (Total liabilities and equity) Tj
+1 0 0 1 70 440 Tm (Current liabilities) Tj
 /F1 10.5 Tf
-1 0 0 1 330 440 Tm (15,240) Tj
+1 0 0 1 330 440 Tm (68,900) Tj
 /F1 10.5 Tf
-1 0 0 1 430 440 Tm (13,820) Tj
+1 0 0 1 430 440 Tm (63,850) Tj
+/F1 10.5 Tf
+1 0 0 1 70 420 Tm (Total liabilities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 420 Tm (177,900) Tj
+/F1 10.5 Tf
+1 0 0 1 430 420 Tm (168,850) Tj
+/F1 10.5 Tf
+1 0 0 1 70 400 Tm (Total equity and liabilities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 400 Tm (280,200) Tj
+/F1 10.5 Tf
+1 0 0 1 430 400 Tm (256,100) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2182 >>
+stream
+BT
+/F1 13 Tf
+1 0 0 1 70 760 Tm (Example Holdings PLC) Tj
+/F1 13 Tf
+1 0 0 1 70 740 Tm (Consolidated statement of cash flows) Tj
+/F1 10 Tf
+1 0 0 1 70 720 Tm (For the year ended 31 December 2025) Tj
+/F1 10 Tf
+1 0 0 1 70 700 Tm (Amounts in NOK thousand) Tj
+/F1 10.5 Tf
+1 0 0 1 330 660 Tm (2025) Tj
+/F1 10.5 Tf
+1 0 0 1 430 660 Tm (2024) Tj
+/F1 10.5 Tf
+1 0 0 1 70 640 Tm (Profit before tax) Tj
+/F1 10.5 Tf
+1 0 0 1 330 640 Tm (19,300) Tj
+/F1 10.5 Tf
+1 0 0 1 430 640 Tm (15,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 620 Tm (Depreciation and amortization) Tj
+/F1 10.5 Tf
+1 0 0 1 330 620 Tm (6,200) Tj
+/F1 10.5 Tf
+1 0 0 1 430 620 Tm (5,900) Tj
+/F1 10.5 Tf
+1 0 0 1 70 600 Tm (Change in working capital) Tj
+/F1 10.5 Tf
+1 0 0 1 330 600 Tm (\(2,700\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 600 Tm (\(1,800\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 580 Tm (Income taxes paid) Tj
+/F1 10.5 Tf
+1 0 0 1 330 580 Tm (\(3,900\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 580 Tm (\(3,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 560 Tm (Net cash from operating activities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 560 Tm (18,900) Tj
+/F1 10.5 Tf
+1 0 0 1 430 560 Tm (16,300) Tj
+/F1 10.5 Tf
+1 0 0 1 70 540 Tm (Purchase of property plant and equipment) Tj
+/F1 10.5 Tf
+1 0 0 1 330 540 Tm (\(16,400\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 540 Tm (\(12,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 520 Tm (Net cash used in investing activities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 520 Tm (\(16,400\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 520 Tm (\(12,100\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 500 Tm (Proceeds from borrowings) Tj
+/F1 10.5 Tf
+1 0 0 1 330 500 Tm (9,000) Tj
+/F1 10.5 Tf
+1 0 0 1 430 500 Tm (6,500) Tj
+/F1 10.5 Tf
+1 0 0 1 70 480 Tm (Repayment of borrowings) Tj
+/F1 10.5 Tf
+1 0 0 1 330 480 Tm (\(6,000\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 480 Tm (\(5,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 460 Tm (Dividends paid) Tj
+/F1 10.5 Tf
+1 0 0 1 330 460 Tm (\(5,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 460 Tm (\(4,300\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 440 Tm (Net cash used in financing activities) Tj
+/F1 10.5 Tf
+1 0 0 1 330 440 Tm (\(2,200\)) Tj
+/F1 10.5 Tf
+1 0 0 1 430 440 Tm (\(3,000\)) Tj
+/F1 10.5 Tf
+1 0 0 1 70 420 Tm (Cash and cash equivalents at end of period) Tj
+/F1 10.5 Tf
+1 0 0 1 330 420 Tm (22,400) Tj
+/F1 10.5 Tf
+1 0 0 1 430 420 Tm (22,100) Tj
 ET
 endstream
 endobj
 xref
-0 8
+0 10
 0000000000 65535 f
 0000000009 00000 n
 0000000058 00000 n
-0000000121 00000 n
-0000000247 00000 n
-0000001943 00000 n
-0000002013 00000 n
-0000002139 00000 n
+0000000127 00000 n
+0000000253 00000 n
+0000002271 00000 n
+0000002341 00000 n
+0000002467 00000 n
+0000004675 00000 n
+0000004801 00000 n
 trailer
-<< /Size 8 /Root 1 0 R >>
+<< /Size 10 /Root 1 0 R >>
 startxref
-4011
+7035
 %%EOF
