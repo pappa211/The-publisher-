@@ -138,6 +138,104 @@ export interface Dataset {
   parsedAt: number
   workbook?: WorkbookMeta
   financialAnalysis?: FinancialAnalysis
+  /** Present when the source was a PDF processed by the v0.3 document pipeline. */
+  financialDocument?: FinancialDocument
+}
+
+/* ===========================================================================
+   v0.3 — Financial document mode (experimental PDF / OCR extraction)
+   ---------------------------------------------------------------------------
+   A PDF is turned into a `FinancialDocument`: a transparent record of what was
+   pulled from each page (embedded text or experimental OCR), which financial
+   statements were detected, the structured line items extracted, and every
+   uncertainty encountered along the way. The pipeline never claims perfect
+   extraction — warnings and per-item confidence are first-class.
+   =========================================================================== */
+
+/** Where a `FinancialDocument` came from. */
+export type FinancialSourceType = 'pdf' | 'csv' | 'xlsx' | 'xml' | 'unknown'
+
+/** How the text behind a document (or a single page) was obtained. */
+export type ExtractionMode = 'embedded_text' | 'ocr' | 'mixed' | 'none'
+
+/** The kinds of financial statement the detector tries to recognise. */
+export type StatementKind =
+  | 'income_statement'
+  | 'balance_sheet'
+  | 'cash_flow'
+  | 'equity'
+  | 'notes'
+  | 'unknown'
+
+/** The raw extraction result for a single PDF page. */
+export interface PdfPageExtraction {
+  pageNumber: number
+  /** Layout-aware text pulled from the PDF's embedded text layer, if any. */
+  embeddedText?: string
+  /** Text produced by experimental browser OCR, if it was run for this page. */
+  ocrText?: string
+  /** Which source the detector should trust for this page. */
+  extractionMode: 'embedded_text' | 'ocr' | 'none'
+  /** Character count of the text actually used (embedded or OCR). */
+  textLength: number
+  /** OCR confidence (0–1) when this page was OCR'd. */
+  confidence?: number
+  warnings: string[]
+}
+
+/** One normalized financial row: a label plus its value in each period/column. */
+export interface FinancialLineItem {
+  label: string
+  /** Keyed by detected period/column label (e.g. "FY 2023") → numeric or raw. */
+  values: Record<string, number | string | null>
+  unit?: string
+  currency?: string
+  sourcePage?: number
+  /** The original line of text the item was parsed from (for inspection). */
+  rawText?: string
+  /** Low-authority confidence in this row (0–1). */
+  confidence: number
+}
+
+/** A detected financial statement and the line items assigned to it. */
+export interface FinancialStatement {
+  kind: StatementKind
+  title: string
+  sourcePage?: number
+  /** Period/column headers detected for this statement, in column order. */
+  periods: string[]
+  rows: FinancialLineItem[]
+  /** Low-authority confidence the section is the statement it claims to be. */
+  confidence: number
+}
+
+/**
+ * The structured, transparent result of running a PDF through the v0.3
+ * pipeline. Keeps the raw page extraction, the OCR text, the detected
+ * statements, the flat line items and every warning clearly separated.
+ */
+export interface FinancialDocument {
+  sourceFile: string
+  sourceType: FinancialSourceType
+  extractionMode: ExtractionMode
+  pageCount: number
+  pages: PdfPageExtraction[]
+  statements: FinancialStatement[]
+  /** Every extracted line item, flattened across statements. */
+  extractedRows: FinancialLineItem[]
+  /** All period/column labels detected across the document, in display order. */
+  periods: string[]
+  currency?: string
+  unit?: string
+  warnings: string[]
+  /** Pages whose embedded text cleared the quality bar. */
+  pagesWithText: number
+  /** Pages that look scanned / image-based and would need OCR. */
+  pagesNeedingOcr: number
+  /** True when embedded text is too thin and OCR is worth offering. */
+  ocrRecommended: boolean
+  /** True when an OCR fallback can be run for this document in the browser. */
+  ocrAvailable: boolean
 }
 
 /** Top-level application state machine. */

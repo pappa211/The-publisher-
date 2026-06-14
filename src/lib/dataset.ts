@@ -7,7 +7,14 @@
  *
  * Everything still happens in the browser — no file is ever uploaded.
  */
-import type { CsvRow, Dataset, FinancialAnalysis, ParseIssue, WorkbookMeta } from '../types'
+import type {
+  CsvRow,
+  Dataset,
+  FinancialAnalysis,
+  FinancialDocument,
+  ParseIssue,
+  WorkbookMeta,
+} from '../types'
 import { profileColumns } from './profile'
 
 const MAX_REPORTED_ISSUES = 25
@@ -31,6 +38,7 @@ export interface RawTable {
   issues: ParseIssue[]
   workbook?: WorkbookMeta
   financialAnalysis?: FinancialAnalysis
+  financialDocument?: FinancialDocument
 }
 
 /** Identifying metadata about the source file. */
@@ -128,5 +136,6 @@ export function buildDataset(meta: SourceMeta, table: RawTable): Dataset {
     parsedAt: Date.now(),
     workbook: table.workbook,
     financialAnalysis: table.financialAnalysis,
+    financialDocument: table.financialDocument,
   }
 }

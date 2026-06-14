@@ -9,10 +9,11 @@ import { DataTable } from './DataTable'
 import { ColumnProfileCard } from './ColumnProfileCard'
 import { Report } from './Report'
 import { FilterBar } from './FilterBar'
+import { FinancialWorkspace } from './FinancialWorkspace'
 
-type Tab = 'report' | 'columns' | 'data'
+type Tab = 'financial' | 'report' | 'columns' | 'data'
 
-const TABS: { id: Tab; label: string }[] = [
+const BASE_TABS: { id: Tab; label: string }[] = [
   { id: 'report', label: 'Report' },
   { id: 'columns', label: 'Column diagnostics' },
   { id: 'data', label: 'Data table' },
@@ -43,8 +44,13 @@ function IssuesNote({ issues }: { issues: ParseIssue[] }) {
  * per-column diagnostics, and the raw data table. A single set of filters is
  * shared across the report and the table.
  */
-export function Workspace({ dataset }: { dataset: Dataset }) {
-  const [tab, setTab] = useState<Tab>('report')
+export function Workspace({ dataset, sourceFile }: { dataset: Dataset; sourceFile?: File | null }) {
+  const hasFinancialDoc = dataset.financialDocument != null
+  const tabs = useMemo<{ id: Tab; label: string }[]>(
+    () => (hasFinancialDoc ? [{ id: 'financial', label: 'Financial document' }, ...BASE_TABS] : BASE_TABS),
+    [hasFinancialDoc],
+  )
+  const [tab, setTab] = useState<Tab>(hasFinancialDoc ? 'financial' : 'report')
   const [filters, setFilters] = useState<Filter[]>([])
 
   const roles = useMemo(() => inferRoles(dataset), [dataset])
@@ -69,7 +75,7 @@ export function Workspace({ dataset }: { dataset: Dataset }) {
       {dataset.issues.length > 0 && <IssuesNote issues={dataset.issues} />}
 
       <div className="tabs" role="tablist">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.id}
             role="tab"
@@ -81,6 +87,10 @@ export function Workspace({ dataset }: { dataset: Dataset }) {
           </button>
         ))}
       </div>
+
+      {tab === 'financial' && dataset.financialDocument && (
+        <FinancialWorkspace document={dataset.financialDocument} sourceFile={sourceFile ?? null} />
+      )}
 
       {tab === 'report' && (
         <Report
