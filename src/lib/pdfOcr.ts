@@ -138,8 +138,17 @@ export async function runPdfOcr(file: File, options: OcrOptions = {}): Promise<O
       })
     }
   } finally {
-    await worker.terminate().catch(() => {})
-    await doc.destroy().catch(() => {})
+    // Teardown must never throw out of the OCR run.
+    try {
+      await worker.terminate()
+    } catch {
+      /* ignore */
+    }
+    try {
+      await doc.destroy()
+    } catch {
+      /* ignore */
+    }
   }
 
   return results
