@@ -28,7 +28,7 @@ interface KeyMetricRule {
 const KEY_METRICS: KeyMetricRule[] = [
   {
     label: 'Revenue',
-    patterns: [/^revenue$/i, /\btotal revenue and income\b/i, /revenue from contracts/i],
+    patterns: [/^revenue$/i, /\btotal revenue and income\b/i, /revenue from contracts/i, /^net sales$/i, /^sales revenue$/i],
     statementHints: [/income/i, /revenue/i],
   },
   {
@@ -38,12 +38,17 @@ const KEY_METRICS: KeyMetricRule[] = [
   },
   {
     label: 'Operating income',
-    patterns: [/operating income/i, /\bebit\b/i],
+    patterns: [/operating income/i, /operating profit/i, /\bebit\b/i],
+    statementHints: [/income/i],
+  },
+  {
+    label: 'Profit before tax',
+    patterns: [/profit before tax/i, /^pre-?tax profit$/i],
     statementHints: [/income/i],
   },
   {
     label: 'Net income',
-    patterns: [/^net income(\s*\(loss\))?$/i, /profit .* period/i],
+    patterns: [/^net income(\s*\(loss\))?$/i, /^net profit(\s*(?:for the (?:year|period)|\(loss\)))?$/i, /profit .* period/i],
     statementHints: [/income/i],
   },
   {

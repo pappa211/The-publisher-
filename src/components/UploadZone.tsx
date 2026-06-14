@@ -63,10 +63,11 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
   return (
     <section className="upload">
       <div className="upload__intro">
-        <h1 className="upload__headline">Turn a data file into a living document</h1>
+        <h1 className="upload__headline">Turn a financial document into a living report</h1>
         <p className="upload__sub">
-          Drop in a CSV, Excel, Numbers, ODS, XML or XBRL file and The Publisher instantly profiles it,
-          charts it and makes it explorable — all in your browser. Nothing is uploaded.
+          Drop in a CSV, Excel, Numbers, ODS, XML, XBRL — or a financial <strong>PDF</strong> — and The
+          Publisher reads it in your browser, extracts the figures (with experimental OCR for scanned
+          documents) and makes them explorable. Nothing is uploaded.
         </p>
       </div>
 
@@ -84,7 +85,7 @@ export function UploadZone({ onFile, onSample, error, busy }: UploadZoneProps) {
         onKeyDown={handleKeyDown}
         role="button"
         tabIndex={0}
-        aria-label="Upload a data file (CSV, Excel, Numbers, ODS, XML or XBRL)"
+        aria-label="Upload a data or financial document file (CSV, Excel, Numbers, ODS, XML, XBRL or PDF)"
       >
         <input
           ref={inputRef}

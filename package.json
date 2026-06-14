@@ -1,9 +1,9 @@
 {
   "name": "the-publisher",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Drop in CSV, spreadsheet, XML or XBRL financial report files and get an interactive living report — fully client-side.",
+  "description": "Drop in CSV, spreadsheet, XML/XBRL or PDF financial documents and get an interactive financial report — fully client-side, with experimental in-browser PDF text extraction and OCR.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "papaparse": "^5.4.1",
+    "pdfjs-dist": "^6.0.227",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tesseract.js": "^7.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

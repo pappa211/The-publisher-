@@ -12,6 +12,7 @@ import { FileParseError } from './dataset'
 import { parseCsvFile } from './parseCsv'
 import { parseSpreadsheetFile } from './parseSpreadsheet'
 import { parseXmlFile } from './parseXml'
+import { parsePdfFile } from './parsePdf'
 
 export { FileParseError }
 
@@ -43,6 +44,10 @@ const XML_EXTENSIONS = new Set([
   'xbrl',
   'xhtml',
 ])
+
+/** PDF handled by the experimental pdf.js + OCR financial-document pipeline. */
+const PDF_EXTENSIONS = new Set(['pdf'])
+const PDF_MIME_TYPES = new Set(['application/pdf'])
 
 /** MIME types browsers commonly report for XML, XBRL and Inline XBRL files. */
 const XML_MIME_TYPES = new Set([
@@ -79,10 +84,12 @@ export const FILE_INPUT_ACCEPT = [
   'application/xbrl+xml',
   '.xhtml',
   'application/xhtml+xml',
+  '.pdf',
+  'application/pdf',
 ].join(',')
 
 /** Short, human-readable list of the formats we accept (for UI copy). */
-export const SUPPORTED_FORMATS_LABEL = 'CSV, Excel, Numbers, ODS, XML & XBRL'
+export const SUPPORTED_FORMATS_LABEL = 'CSV, Excel, Numbers, ODS, XML, XBRL & PDF'
 
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf('.')
@@ -104,11 +111,19 @@ export function isXmlFile(file: File): boolean {
   return XML_MIME_TYPES.has(file.type)
 }
 
+/** Whether a file should be read by the experimental PDF financial pipeline. */
+export function isPdfFile(file: File): boolean {
+  const ext = extensionOf(file.name)
+  if (ext) return PDF_EXTENSIONS.has(ext)
+  return PDF_MIME_TYPES.has(file.type)
+}
+
 /**
  * Parse any supported file into a fully profiled Dataset, choosing the reader
  * from the file type. Rejects with a `FileParseError` on failure.
  */
 export function parseFile(file: File): Promise<Dataset> {
+  if (isPdfFile(file)) return parsePdfFile(file)
   if (isSpreadsheetFile(file)) return parseSpreadsheetFile(file)
   if (isXmlFile(file)) return parseXmlFile(file)
   return parseCsvFile(file)
@@ -128,10 +143,22 @@ export interface SampleDataset {
  */
 export const SAMPLE_DATASETS: SampleDataset[] = [
   {
-    id: 'trade-ledger',
-    label: 'Trade ledger',
-    file: 'trade-ledger-sample.csv',
-    description: 'Time-stamped trading events with P&L',
+    id: 'annual-accounts-pdf',
+    label: 'Annual accounts (PDF)',
+    file: 'annual-accounts-sample.pdf',
+    description: 'Text-based PDF: income statement + balance sheet',
+  },
+  {
+    id: 'income-statement',
+    label: 'Income statement',
+    file: 'income-statement-sample.csv',
+    description: 'Line items by year (2023 · 2022 · 2021)',
+  },
+  {
+    id: 'balance-sheet',
+    label: 'Balance sheet',
+    file: 'balance-sheet-sample.csv',
+    description: 'Assets, liabilities & equity by year',
   },
   {
     id: 'trial-balance',
@@ -140,26 +167,31 @@ export const SAMPLE_DATASETS: SampleDataset[] = [
     description: 'Accounting balances by entity & period',
   },
   {
+    id: 'trade-ledger',
+    label: 'Trade ledger',
+    file: 'trade-ledger-sample.csv',
+    description: 'Time-stamped trading events with P&L',
+  },
+  {
     id: 'football-results',
     label: 'Football results',
     file: 'football-results-sample.csv',
     description: 'Match results across leagues & seasons',
   },
-  {
-    id: 'world-cities',
-    label: 'World cities',
-    file: 'world-cities.csv',
-    description: 'Reference data with mixed column types',
-  },
 ]
 
-/** Fetch a bundled sample by file name and parse it through the pipeline. */
-export async function loadSampleDataset(file = SAMPLE_DATASETS[0].file): Promise<Dataset> {
+/** Fetch a bundled sample file as a `File`, preserving a usable filename so the
+ * file-type router (and the PDF/OCR path) treats it exactly like an upload. */
+export async function loadSampleFile(file = SAMPLE_DATASETS[0].file): Promise<File> {
   const url = `${import.meta.env.BASE_URL}sample-data/${file}`
   const response = await fetch(url)
   if (!response.ok) {
     throw new FileParseError('Could not load the sample dataset.')
   }
-  const blob = new File([await response.blob()], file)
-  return parseFile(blob)
+  return new File([await response.blob()], file)
+}
+
+/** Fetch a bundled sample by file name and parse it through the pipeline. */
+export async function loadSampleDataset(file = SAMPLE_DATASETS[0].file): Promise<Dataset> {
+  return parseFile(await loadSampleFile(file))
 }
