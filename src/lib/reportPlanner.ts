@@ -361,19 +361,19 @@ export function planReport(dataset: Dataset, roles: ColumnRole[]): ReportPlan {
     const finance = dataset.financialAnalysis
     findings.unshift({
       tone: 'financial',
-      label: 'Financial workbook',
+      label: 'Financial report',
       detail: `${formatPercent(finance.confidence * 100)} confidence`,
     })
     summary = [
-      `This looks like a financial-statement workbook: ${formatInt(finance.factCount)} statement facts normalized from ${formatInt(finance.sheetCount)} sheet${finance.sheetCount === 1 ? '' : 's'}.`,
+      `This looks like a financial statement report: ${formatInt(finance.factCount)} statement facts normalized from ${formatInt(finance.sheetCount)} source${finance.sheetCount === 1 ? '' : 's'}.`,
       `Detected periods: ${finance.periods.slice(0, 4).join(', ')}${finance.periods.length > 4 ? `, +${finance.periods.length - 4} more` : ''}.`,
       `Statement coverage includes ${finance.statementTypes.slice(0, 4).join(', ')}${finance.statementTypes.length > 4 ? `, +${finance.statementTypes.length - 4} more` : ''}.`,
       ...summary.slice(1),
     ]
     datasetKindGuess = {
-      label: 'Financial statement workbook',
+      label: 'Financial statement report',
       confidence: finance.confidence,
-      rationale: 'financial statement sheets, period columns, line items and numeric amounts',
+      rationale: 'financial statement sections, periods, line items and numeric amounts',
     }
   }
 
