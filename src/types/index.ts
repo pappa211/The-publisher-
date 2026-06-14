@@ -75,6 +75,56 @@ export interface ParseIssue {
   row?: number
 }
 
+export type WorkbookSheetKind = 'financial-table' | 'table' | 'empty'
+
+export interface WorkbookSheetMeta {
+  name: string
+  rowCount: number
+  columnCount: number
+  importedRows: number
+  kind: WorkbookSheetKind
+  statementType?: string
+  unit?: string
+}
+
+export interface WorkbookMeta {
+  sheetCount: number
+  importedSheetCount: number
+  sheets: WorkbookSheetMeta[]
+}
+
+export interface FinancialHighlight {
+  label: string
+  currentPeriod: string
+  currentValue: number
+  priorPeriod?: string
+  priorValue?: number
+  change?: number
+  changePct?: number
+  statement: string
+  sheet: string
+  unit?: string
+}
+
+export interface FinancialCheck {
+  label: string
+  status: 'ok' | 'warning' | 'missing'
+  detail: string
+  period?: string
+}
+
+export interface FinancialAnalysis {
+  confidence: number
+  unit?: string
+  periods: string[]
+  sheetCount: number
+  factCount: number
+  statementTypes: string[]
+  highlights: FinancialHighlight[]
+  checks: FinancialCheck[]
+  notes: string[]
+}
+
 /** The fully parsed + profiled dataset that drives the workspace UI. */
 export interface Dataset {
   fileName: string
@@ -86,6 +136,8 @@ export interface Dataset {
   profiles: ColumnProfile[]
   issues: ParseIssue[]
   parsedAt: number
+  workbook?: WorkbookMeta
+  financialAnalysis?: FinancialAnalysis
 }
 
 /** Top-level application state machine. */
@@ -149,7 +201,7 @@ export interface Filter {
 
 /** A compact "key finding" surfaced as a chip near the report title. */
 export interface Finding {
-  tone: 'time' | 'dimension' | 'measure' | 'identifier' | 'text' | 'quality'
+  tone: 'time' | 'dimension' | 'measure' | 'identifier' | 'text' | 'quality' | 'financial'
   label: string
   detail: string
 }
