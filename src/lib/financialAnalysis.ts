@@ -284,7 +284,7 @@ export function buildFinancialAnalysis(
     highlights: buildHighlights(facts, periods),
     checks: buildChecks(facts, periods, statementTypes),
     notes: [
-      `${facts.length.toLocaleString()} financial facts normalized from ${importedFinancialSheets.length.toLocaleString()} workbook sheets.`,
+      `${facts.length.toLocaleString()} financial facts normalized from ${importedFinancialSheets.length.toLocaleString()} source${importedFinancialSheets.length === 1 ? '' : 's'}.`,
       'Amounts are read from source cells and grouped by statement, section, line item and period.',
     ],
   }

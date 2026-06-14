@@ -25,16 +25,16 @@ export function FinancialStatementAnalysis({ analysis }: { analysis: FinancialAn
   return (
     <ViewCard
       title="Financial statement analysis"
-      description="Statement-aware highlights, coverage and checks derived from every workbook sheet."
+      description="Statement-aware highlights, coverage and checks derived from the financial source data."
     >
       <div className="finance-panel">
-        <div className="finance-kpis" aria-label="Financial workbook summary">
+        <div className="finance-kpis" aria-label="Financial report summary">
           <div className="finance-kpi">
             <span className="finance-kpi__label">Confidence</span>
             <strong>{formatPercent(analysis.confidence * 100)}</strong>
           </div>
           <div className="finance-kpi">
-            <span className="finance-kpi__label">Financial sheets</span>
+            <span className="finance-kpi__label">Sources</span>
             <strong>{formatInt(analysis.sheetCount)}</strong>
           </div>
           <div className="finance-kpi">

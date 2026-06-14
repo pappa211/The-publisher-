@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "description": "Drop in any spreadsheet (CSV, Excel, Numbers, ODS) and get a domain-agnostic, interactive living report — fully client-side.",
+  "description": "Drop in CSV, spreadsheet, XML or XBRL financial report files and get an interactive living report — fully client-side.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

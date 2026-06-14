@@ -2,14 +2,16 @@
  * The single entry point for turning an uploaded file into a `Dataset`.
  *
  * It sniffs the file's extension / MIME type and dispatches to the right
- * reader: PapaParse for delimited text (CSV/TSV) and SheetJS for spreadsheet
- * workbooks (Excel, OpenDocument, Apple Numbers). Everything runs in the
- * browser; nothing is uploaded.
+ * reader: PapaParse for delimited text (CSV/TSV), SheetJS for spreadsheet
+ * workbooks (Excel, OpenDocument, Apple Numbers), and a browser-native XML
+ * reader for XML/XBRL financial reports. Everything runs in the browser;
+ * nothing is uploaded.
  */
 import type { Dataset } from '../types'
 import { FileParseError } from './dataset'
 import { parseCsvFile } from './parseCsv'
 import { parseSpreadsheetFile } from './parseSpreadsheet'
+import { parseXmlFile } from './parseXml'
 
 export { FileParseError }
 
@@ -35,6 +37,21 @@ const SPREADSHEET_MIME_TYPES = new Set([
   'application/x-iwork-numbers-sffnumbers',
 ])
 
+/** XML / XBRL extensions handled by the DOMParser-backed reader. */
+const XML_EXTENSIONS = new Set([
+  'xml',
+  'xbrl',
+  'xhtml',
+])
+
+/** MIME types browsers commonly report for XML, XBRL and Inline XBRL files. */
+const XML_MIME_TYPES = new Set([
+  'application/xml',
+  'text/xml',
+  'application/xbrl+xml',
+  'application/xhtml+xml',
+])
+
 /**
  * The `accept` value for the file input. Lists both extensions and MIME types
  * so the OS file picker pre-filters helpfully without being overly strict.
@@ -55,10 +72,17 @@ export const FILE_INPUT_ACCEPT = [
   '.ods',
   'application/vnd.oasis.opendocument.spreadsheet',
   '.numbers',
+  '.xml',
+  'application/xml',
+  'text/xml',
+  '.xbrl',
+  'application/xbrl+xml',
+  '.xhtml',
+  'application/xhtml+xml',
 ].join(',')
 
 /** Short, human-readable list of the formats we accept (for UI copy). */
-export const SUPPORTED_FORMATS_LABEL = 'CSV, Excel (.xlsx/.xls), Numbers & ODS'
+export const SUPPORTED_FORMATS_LABEL = 'CSV, Excel, Numbers, ODS, XML & XBRL'
 
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf('.')
@@ -73,12 +97,21 @@ export function isSpreadsheetFile(file: File): boolean {
   return SPREADSHEET_MIME_TYPES.has(file.type)
 }
 
+/** Whether a file should be read by the XML / XBRL path. */
+export function isXmlFile(file: File): boolean {
+  const ext = extensionOf(file.name)
+  if (ext) return XML_EXTENSIONS.has(ext)
+  return XML_MIME_TYPES.has(file.type)
+}
+
 /**
  * Parse any supported file into a fully profiled Dataset, choosing the reader
  * from the file type. Rejects with a `FileParseError` on failure.
  */
 export function parseFile(file: File): Promise<Dataset> {
-  return isSpreadsheetFile(file) ? parseSpreadsheetFile(file) : parseCsvFile(file)
+  if (isSpreadsheetFile(file)) return parseSpreadsheetFile(file)
+  if (isXmlFile(file)) return parseXmlFile(file)
+  return parseCsvFile(file)
 }
 
 /** A bundled sample dataset, used to demonstrate different data *shapes*. */
