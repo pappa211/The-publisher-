@@ -39,6 +39,13 @@ export function SummaryCards({ dataset }: { dataset: Dataset }) {
     <section className="summary" aria-label="Dataset summary">
       <StatCard label="Rows" value={formatInt(dataset.rowCount)} />
       <StatCard label="Columns" value={formatInt(dataset.columnCount)} />
+      {dataset.workbook && (
+        <StatCard
+          label="Sheets"
+          value={formatInt(dataset.workbook.sheetCount)}
+          sub={`${formatInt(dataset.workbook.importedSheetCount)} non-empty sheets processed`}
+        />
+      )}
       <StatCard
         label="Data complete"
         value={formatPercent(completeness)}

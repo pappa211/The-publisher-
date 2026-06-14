@@ -18,8 +18,10 @@ const BOOLEAN_FALSE = new Set(['false', 'no'])
 
 /** Matches plain, comma-grouped, decimal, signed and scientific numbers. */
 const NUMBER_RE = /^[-+]?(\d{1,3}(,\d{3})+|\d+)(\.\d+)?([eE][-+]?\d+)?$/
-/** Matches a leading currency symbol we are willing to strip. */
-const CURRENCY_RE = /^[-+]?[$€£¥]\s?/
+/** Currency symbols we are willing to strip before numeric parsing. */
+const CURRENCY_SYMBOL_RE = /[$€£¥]/g
+/** Accounting statements often render negatives as `(1,234)`. */
+const ACCOUNTING_NEGATIVE_RE = /^\((.*)\)$/
 
 /** Common, unambiguous date shapes. We require one of these before trusting
  * `Date.parse`, which is otherwise far too lenient. */
@@ -38,10 +40,28 @@ export function isMissing(value: string | null | undefined): boolean {
 
 /** Parse a numeric cell, or return null if it is not a clean number. */
 export function parseNumber(raw: string): number | null {
-  const trimmed = raw.trim().replace(CURRENCY_RE, (m) => (m.startsWith('-') ? '-' : m.startsWith('+') ? '+' : ''))
+  let trimmed = raw.trim().replace(/\u00a0/g, ' ')
+  if (trimmed === '') return null
+
+  let negative = false
+  const accounting = trimmed.match(ACCOUNTING_NEGATIVE_RE)
+  if (accounting) {
+    negative = true
+    trimmed = accounting[1].trim()
+  }
+
+  if (trimmed.startsWith('-')) {
+    negative = true
+    trimmed = trimmed.slice(1).trim()
+  } else if (trimmed.startsWith('+')) {
+    trimmed = trimmed.slice(1).trim()
+  }
+
+  trimmed = trimmed.replace(CURRENCY_SYMBOL_RE, '').replace(/\s+/g, '')
   if (trimmed === '' || !NUMBER_RE.test(trimmed)) return null
   const n = Number(trimmed.replace(/,/g, ''))
-  return Number.isFinite(n) ? n : null
+  const signed = negative ? -n : n
+  return Number.isFinite(signed) ? signed : null
 }
 
 /** Parse a boolean cell, or return null. */

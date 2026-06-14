@@ -337,7 +337,7 @@ export function planReport(dataset: Dataset, roles: ColumnRole[]): ReportPlan {
   const completeness = totalCells === 0 ? 100 : ((totalCells - missingCells) / totalCells) * 100
 
   const findings = buildFindings(primaryTime, dimensions, measures, identifiers, textFields, completeness)
-  const summary = buildSummary(
+  let summary = buildSummary(
     dataset,
     primaryTime,
     primaryTime ? profiles.get(primaryTime) : undefined,
@@ -349,13 +349,33 @@ export function planReport(dataset: Dataset, roles: ColumnRole[]): ReportPlan {
   )
   const qualityWarnings = buildQualityWarnings(roles, dataset.profiles)
   const suggestedViews = buildViews(primaryTime, primaryMeasure, dimensions, measures, missingCells > 0)
-  const datasetKindGuess = guessKind(
+  let datasetKindGuess = guessKind(
     Boolean(primaryTime),
     measures.length,
     dimensions.length,
     identifiers.length,
     anyNegative,
   )
+
+  if (dataset.financialAnalysis) {
+    const finance = dataset.financialAnalysis
+    findings.unshift({
+      tone: 'financial',
+      label: 'Financial workbook',
+      detail: `${formatPercent(finance.confidence * 100)} confidence`,
+    })
+    summary = [
+      `This looks like a financial-statement workbook: ${formatInt(finance.factCount)} statement facts normalized from ${formatInt(finance.sheetCount)} sheet${finance.sheetCount === 1 ? '' : 's'}.`,
+      `Detected periods: ${finance.periods.slice(0, 4).join(', ')}${finance.periods.length > 4 ? `, +${finance.periods.length - 4} more` : ''}.`,
+      `Statement coverage includes ${finance.statementTypes.slice(0, 4).join(', ')}${finance.statementTypes.length > 4 ? `, +${finance.statementTypes.length - 4} more` : ''}.`,
+      ...summary.slice(1),
+    ]
+    datasetKindGuess = {
+      label: 'Financial statement workbook',
+      confidence: finance.confidence,
+      rationale: 'financial statement sheets, period columns, line items and numeric amounts',
+    }
+  }
 
   return {
     title: titleFromFileName(dataset.fileName),

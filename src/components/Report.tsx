@@ -7,6 +7,7 @@ import { Distribution } from './views/Distribution'
 import { CrossTab } from './views/CrossTab'
 import { CompletenessMap } from './views/CompletenessMap'
 import { ViewCard } from './views/ViewCard'
+import { FinancialStatementAnalysis } from './FinancialStatementAnalysis'
 
 interface ReportProps {
   dataset: Dataset
@@ -121,6 +122,8 @@ export function Report(props: ReportProps) {
         onRemove={onRemoveFilter}
         onClear={onClearFilters}
       />
+
+      {dataset.financialAnalysis && <FinancialStatementAnalysis analysis={dataset.financialAnalysis} />}
 
       {plan.qualityWarnings.length > 0 && (
         <ViewCard title="Things to watch" description="Generic data-quality notes derived from structure and completeness.">
