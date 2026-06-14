@@ -25,7 +25,11 @@ interface PdfTextItem {
 interface PdfPage {
   getTextContent(): Promise<{ items: unknown[] }>
   getViewport(opts: { scale: number }): { width: number; height: number }
-  render(opts: { canvasContext: CanvasRenderingContext2D; viewport: unknown }): {
+  render(opts: {
+    canvas?: HTMLCanvasElement
+    canvasContext: CanvasRenderingContext2D
+    viewport: unknown
+  }): {
     promise: Promise<void>
   }
   cleanup?(): void
@@ -61,12 +65,26 @@ async function loadPdfjs(): Promise<typeof import('pdfjs-dist')> {
   return pdfjs
 }
 
-/** Open a PDF File as a pdf.js document. Throws a plain Error on failure. */
+/**
+ * Open a PDF File as a pdf.js document. Throws a plain Error on failure.
+ *
+ * pdf.js v6 exposes teardown on the *loading task*, not the document proxy
+ * (which only has `cleanup()`), so we wrap the proxy and route `destroy()` to
+ * `loadingTask.destroy()` — which also terminates the document's worker.
+ */
 export async function loadPdfDocument(file: File): Promise<PdfDocument> {
   const pdfjs = await loadPdfjs()
   const data = new Uint8Array(await file.arrayBuffer())
   const task = pdfjs.getDocument({ data })
-  return (await task.promise) as unknown as PdfDocument
+  const proxy = (await task.promise) as unknown as {
+    numPages: number
+    getPage(n: number): Promise<PdfPage>
+  }
+  return {
+    numPages: proxy.numPages,
+    getPage: (n: number) => proxy.getPage(n),
+    destroy: () => task.destroy(),
+  }
 }
 
 /**
@@ -174,7 +192,12 @@ export async function extractPdf(file: File): Promise<PdfExtractResult> {
     }
   }
 
-  await doc.destroy().catch(() => {})
+  // Teardown must never fail extraction — swallow any cleanup error.
+  try {
+    await doc.destroy()
+  } catch {
+    /* ignore */
+  }
   return { pageCount, pages, warnings }
 }
 
@@ -195,7 +218,7 @@ export async function renderPdfPageToCanvas(
   canvas.height = Math.ceil(viewport.height)
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Could not get a 2D canvas context for PDF rendering.')
-  await page.render({ canvasContext: ctx, viewport }).promise
+  await page.render({ canvas, canvasContext: ctx, viewport }).promise
   page.cleanup?.()
   return canvas
 }
