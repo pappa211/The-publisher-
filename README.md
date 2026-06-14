@@ -73,7 +73,8 @@ PDFs are handled in layers:
 
 OCR is experimental and local-only with respect to the uploaded file: the document is never sent to a
 server. Tesseract engine assets are loaded by the browser on demand, then the PDF pages are processed
-locally page by page with progress reporting and graceful failure.
+locally page by page with progress reporting and graceful failure. OCR processes the full document
+for PDFs up to 500 pages; larger PDFs are capped at the first 500 pages.
 
 ## Statement Coverage
 
@@ -184,7 +185,8 @@ src/components/PdfOcrProgress.tsx
 - Complex multi-column annual-report layouts may still need manual review.
 - Notes are not yet structurally extracted.
 - Subtotal checks are basic and mostly limited to obvious concepts.
-- Very large PDFs can be slow because processing is local and browser-bound.
+- Very large PDFs can be slow because processing is local and browser-bound. OCR is capped at 500
+  pages per run.
 - The `xlsx` dependency currently has known upstream audit advisories with no direct patched
   replacement available in this dependency line.
 

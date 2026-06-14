@@ -1,5 +1,6 @@
 import type { FinancialDocument } from '../types'
 import { formatInt, formatPercent } from '../lib/format'
+import { DEFAULT_OCR_PAGE_LIMIT } from '../lib/pdfOcr'
 
 interface FinancialDocumentOverviewProps {
   document: FinancialDocument
@@ -65,7 +66,10 @@ export function FinancialDocumentOverview({
         <div className="ocr-callout">
           <div>
             <strong>OCR may improve this PDF extraction.</strong>
-            <p>{document.ocrReason ?? 'Embedded text looks weak or incomplete.'}</p>
+            <p>
+              {document.ocrReason ?? 'Embedded text looks weak or incomplete.'} Local OCR will process the
+              full document, capped at {formatInt(DEFAULT_OCR_PAGE_LIMIT)} pages.
+            </p>
           </div>
           <button type="button" className="btn" onClick={onRunOcr} disabled={ocrBusy}>
             {ocrBusy ? 'Running OCR…' : 'Run local OCR'}
